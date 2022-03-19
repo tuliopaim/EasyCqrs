@@ -1,6 +1,6 @@
 ﻿using EasyCqrs.Queries;
 
-namespace EasyCqrs.Sample.Queries.GetPeopleQuery;
+namespace EasyCqrs.Sample.Application.Queries.GetPeopleQuery;
 
 public class GetPeopleQueryHandler : IQueryHandler<GetPeopleQueryInput, GetPeopleQueryResult>
 {

@@ -1,6 +1,6 @@
-using EasyCqrs.Mediator;
-using EasyCqrs.Sample.Commands.NewPersonCommand;
-using EasyCqrs.Sample.Queries.GetPeopleQuery;
+using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
+using EasyCqrs.Sample.Application.Queries.GetPeopleQuery;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyCqrs.Sample.Controllers;

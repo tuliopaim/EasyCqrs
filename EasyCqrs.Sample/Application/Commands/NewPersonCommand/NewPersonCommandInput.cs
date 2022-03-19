@@ -1,6 +1,6 @@
 ﻿using EasyCqrs.Commands;
 
-namespace EasyCqrs.Sample.Commands.NewPersonCommand;
+namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 
 public class NewPersonCommandInput : CommandInput<CommandResult>
 {

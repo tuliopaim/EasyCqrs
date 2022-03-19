@@ -1,5 +1,5 @@
 using EasyCqrs;
-using EasyCqrs.Sample.Commands.NewPersonCommand;
+using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 
 var builder = WebApplication.CreateBuilder(args);
 

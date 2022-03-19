@@ -1,4 +1,4 @@
-﻿namespace EasyCqrs.Sample.Queries.GetPeopleQuery;
+﻿namespace EasyCqrs.Sample.Application.Queries.GetPeopleQuery;
 
 public class GetPeopleResult
 {
