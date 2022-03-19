@@ -1,4 +1,4 @@
-name: Build and test
+name: Build, test and deploy
 
 on:
   push:
@@ -6,14 +6,13 @@ on:
   pull_request:
     branches: [ master ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  build-pack-push:
+    env:
+      project-path: ./src/EasyCqrs/EasyCqrs.csproj
+
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
         with:
@@ -25,16 +24,24 @@ jobs:
           dotnet-version: 6.0.x
       
       - name: Restore dependencies
-        run: dotnet restore
-        working-directory: ./src/EasyCqrs
+        run: dotnet restore ${{ env.project-path }}
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
-        working-directory: ./src/EasyCqrs
+        run: dotnet build ${{ env.project-path }} -c Release
 
       - name: Test
-        run: dotnet test
-        working-directory: ./src/EasyCqrs
+        run: dotnet test ${{ env.project-path }}
+      
+      - name: Pack
+        run: dotnet pack ${{ env.project-path }} -c Release -o out
+
+      - name: Push no NuGet
+        run: |
+          cd out
+          dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ secrets.NUGET_SERVER }} --skip-duplicate
+
+  
+
 
 
       
