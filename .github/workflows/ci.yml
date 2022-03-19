@@ -19,10 +19,16 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.101
+          dotnet-version: 6.0
+
+      - name: Restore dependencies
+        run: dotnet restore
+        working-directory: ./src/EasyCqrs
+
       - name: Build with dotnet
         run: dotnet build --configuration Release
         working-directory: ./src/EasyCqrs
+
       - name: Test
         run: dotnet test
         working-directory: ./src/EasyCqrs
