@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\EasyCqrs\EasyCqrs.csproj" />
       <ProjectReference Include="..\EasyCqrs\EasyCqrs.csproj" />
     </ItemGroup>
 
