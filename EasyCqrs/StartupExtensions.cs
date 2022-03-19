@@ -3,7 +3,6 @@ using EasyCqrs.Pipelines;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using IMediator = EasyCqrs.Mediator.IMediator;
 
 namespace EasyCqrs;
 
@@ -33,7 +32,7 @@ public static class StartupExtensions
 
         config?.Invoke(configuration);
 
-        services.AddScoped<IMediator, Mediator.Mediator>();
+        services.AddScoped<IMediator, MediatR.Mediator>();
         services.AddMediatR(configuration.Assemblies);
 
         return services
