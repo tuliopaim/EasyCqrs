@@ -1,8 +1,8 @@
-name: Pack and Push
+name: Merge - Pack and Push
 
 on:
-  release:
-    types: [published]
+  push:
+    branches: [ master ]
 
 jobs:
   build-pack-push:
@@ -20,6 +20,15 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 6.0.x
+      
+      - name: Restore dependencies
+        run: dotnet restore ${{ env.project-path }}
+
+      - name: Build with dotnet
+        run: dotnet build ${{ env.project-path }} -c Release
+
+      - name: Test
+        run: dotnet test ${{ env.project-path }}    
 
       - name: Create NuGet Package
         run: dotnet pack ${{ env.project-path }} -c Release /p:Version=${{ github.event.release.tag_name }} -o out
