@@ -1,5 +1,5 @@
 using EasyCqrs.Commands;
-using EasyCqrs.Sample.Events;
+using EasyCqrs.Sample.Application.Events;
 using MediatR;
 
 namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
