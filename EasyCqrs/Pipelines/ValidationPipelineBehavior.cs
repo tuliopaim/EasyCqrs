@@ -12,14 +12,14 @@ public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
     where TResponse : MediatorResult, new()
 {
     private readonly ILogger<ValidationPipelineBehavior<TRequest, TResponse>> _logger;
-    private readonly IValidator<TRequest> _validator;
+    private readonly IEnumerable<IValidator<TRequest>>? _validators;
 
     public ValidationPipelineBehavior(
         ILogger<ValidationPipelineBehavior<TRequest, TResponse>> logger,
-        IValidator<TRequest> validator)
+        IEnumerable<IValidator<TRequest>>? validators)
     {
         _logger = logger;
-        _validator = validator;
+        _validators = validators;
     }
 
     public Task<TResponse> Handle(
@@ -27,7 +27,12 @@ public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
         CancellationToken cancellationToken,    
         RequestHandlerDelegate<TResponse> next)
     {
-        var errors = _validator.Validate(request).Errors ?? new();
+        if (_validators is null) return next();
+        
+        var errors = _validators
+            .Select(v => v.Validate(request))
+            .SelectMany(result => result.Errors)
+            .ToList();
 
         _logger.LogDebug("{RequestType} - Validated with {ValidationErrorQuantity} error(s)",
             typeof(TRequest).Name,
