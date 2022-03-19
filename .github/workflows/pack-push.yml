@@ -28,7 +28,7 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: TP.EasyCqrs
-          path: ./src/EasyCqrs/bin/Release/EasyCqrs.${{ github.event.release.tag_name }}.nupkg
+          path: ./src/EasyCqrs/bin/Release/TP.EasyCqrs.${{ github.event.release.tag_name }}.nupkg
 
       - name: Publish Nuget Package
         run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ secrets.NUGET_SERVER }} --skip-duplicate
