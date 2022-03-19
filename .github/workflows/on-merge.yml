@@ -31,7 +31,7 @@ jobs:
         run: dotnet test ${{ env.project-path }}    
 
       - name: Create NuGet Package
-        run: dotnet pack ${{ env.project-path }} -c Release /p:Version=${{ github.event.release.tag_name }} -o out
+        run: dotnet pack ${{ env.project-path }} -c Release -o out
 
       - name: Publish Nuget Package
         run: |
