@@ -1,4 +1,4 @@
-name: CI
+name: Build and test
 
 on:
   push:
@@ -16,11 +16,14 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - uses: actions/checkout@v2
-      - name: Setup .NET Core
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 6.0
-
+          dotnet-version: 6.0.x
+      
       - name: Restore dependencies
         run: dotnet restore
         working-directory: ./src/EasyCqrs
@@ -32,3 +35,6 @@ jobs:
       - name: Test
         run: dotnet test
         working-directory: ./src/EasyCqrs
+
+
+      
