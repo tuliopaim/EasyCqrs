@@ -1,5 +1,6 @@
 using EasyCqrs.Mediator;
 using EasyCqrs.Sample.Commands.NewPersonCommand;
+using EasyCqrs.Sample.Queries.GetPeopleQuery;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EasyCqrs.Sample.Controllers;
@@ -19,6 +20,16 @@ public class PersonController : ControllerBase
     public async Task<IActionResult> NewPerson([FromBody] NewPersonCommandInput commandInput)
     {
         var result = await _mediator.Send(commandInput);
+       
+        return result.IsValid() 
+            ? Ok(result)
+            : BadRequest(result);
+    }
+
+    [HttpGet(Name = "GetPeople")]
+    public async Task<IActionResult> GetPeople([FromQuery] GetPeopleQueryInput queryInput)
+    {
+        var result = await _mediator.Send(queryInput);
        
         return result.IsValid() 
             ? Ok(result)

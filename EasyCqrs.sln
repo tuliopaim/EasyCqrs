@@ -1,8 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCqrs", "EasyCqrs\EasyCqrs.csproj", "{1160CD49-F3AD-441B-BD00-3D0DDC115A41}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32228.430
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCqrs", "EasyCqrs\EasyCqrs.csproj", "{1160CD49-F3AD-441B-BD00-3D0DDC115A41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyCqrs.Sample", "EasyCqrs.Sample\EasyCqrs.Sample.csproj", "{5D3E533D-8828-4F88-935A-6FE75FB65F85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EasyCqrs.Sample", "EasyCqrs.Sample\EasyCqrs.Sample.csproj", "{5D3E533D-8828-4F88-935A-6FE75FB65F85}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4940A710-B719-482E-B1FC-58989CE13E74}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,5 +26,11 @@ Global
 		{5D3E533D-8828-4F88-935A-6FE75FB65F85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D3E533D-8828-4F88-935A-6FE75FB65F85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D3E533D-8828-4F88-935A-6FE75FB65F85}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05DC8F4B-FB3E-4298-9A21-598045D38C93}
 	EndGlobalSection
 EndGlobal

@@ -2,5 +2,5 @@
 
 public class PagedQueryResult<TResult> : ListQueryResult<TResult>
 {
-    public QueryPaginationResult Pagination { get; set; }
+    public QueryPagination Pagination { get; set; } = new();
 }

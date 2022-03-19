@@ -1,5 +1,5 @@
-using System.Reflection;
 using EasyCqrs;
+using EasyCqrs.Sample.Commands.NewPersonCommand;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +7,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCqrs(Assembly.GetExecutingAssembly());
+builder.Services.AddCqrs(typeof(NewPersonCommandHandler).Assembly);
 
 var app = builder.Build();
 
