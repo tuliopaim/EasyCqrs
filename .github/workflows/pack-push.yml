@@ -22,7 +22,7 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: Create NuGet Package
-        run: dotnet pack ${{ env.project-path }} -c Release /p:Version=${{ github.event.release.tag_name }}"
+        run: dotnet pack ${{ env.project-path }} -c Release /p:Version=${{ github.event.release.tag_name }}
 
       - name: Archive NuGet Package
         uses: actions/upload-artifact@v1
