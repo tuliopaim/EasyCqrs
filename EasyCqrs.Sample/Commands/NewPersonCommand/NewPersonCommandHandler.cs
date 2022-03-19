@@ -11,7 +11,7 @@ public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, Co
         _logger = logger;
     }
     
-    public async Task<CommandResult> Handle(NewPersonCommandInput command, CancellationToken cancellationToken)
+    public async Task<CommandResult> Handle(NewPersonCommandInput request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Registering person...");
 

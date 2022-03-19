@@ -7,5 +7,4 @@ public interface ICommandHandler<in TCommandInput, TCommandResult> : IMediatorHa
     where TCommandInput : IRequest<TCommandResult>, IMediatorInput<TCommandResult>
     where TCommandResult : IMediatorResult
 {
-    new Task<TCommandResult> Handle(TCommandInput command, CancellationToken cancellationToken);
 }
