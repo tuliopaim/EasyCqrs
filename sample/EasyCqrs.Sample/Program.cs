@@ -7,7 +7,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//teste ci
 builder.Services.AddCqrs(typeof(NewPersonCommandHandler).Assembly);
 
 var app = builder.Build();
