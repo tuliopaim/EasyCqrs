@@ -46,6 +46,8 @@ builder.Services.AddCqrs(
 ### CommandResult
 You can create a specifc CommandResult class by inheriting the `CommandResult` class.
    
+> :warning: **To validation and exception pipeline work properly you need to declare a parameterless contructor** 
+
 ```csharp
 using EasyCqrs.Commands;
 
@@ -53,6 +55,9 @@ namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 
 public class NewPersonCommandResult : CommandResult
 {
+    /* To validation and exception works properly */
+    public NewPersonCommandResult() {}
+
     public NewPersonCommandResult(Guid newPersonId)
     {
         NewPersonId = newPersonId;
@@ -150,6 +155,12 @@ public class PersonController : ControllerBase
             : BadRequest(new { result.Errors });
     }
 }
+```
+
+Error result:
+
+``` json
+
 ```
 
 [Checkout Samples]("https://github.com/tuliopaim/EasyCqrs/tree/master/sample/EasyCqrs.Sample/Application")
