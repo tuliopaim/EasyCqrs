@@ -46,7 +46,7 @@ builder.Services.AddCqrs(
 ### CommandResult
 You can create a specifc CommandResult class by inheriting the `CommandResult` class.
    
-> :warning: **To validation and exception pipeline work properly you need to declare a parameterless contructor** 
+> :warning: **To validation and exception pipeline work properly you need to declare a parameterless contructor**, otherwise the code will not compile
 
 ```csharp
 using EasyCqrs.Commands;
