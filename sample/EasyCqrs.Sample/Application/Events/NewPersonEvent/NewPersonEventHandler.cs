@@ -1,6 +1,6 @@
 ﻿using EasyCqrs.Events;
 
-namespace EasyCqrs.Sample.Application.Events;
+namespace EasyCqrs.Sample.Application.Events.NewPersonEvent;
 
 public class NewPersonEventHandler : IEventHandler<NewPersonEventInput>
 {
