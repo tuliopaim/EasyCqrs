@@ -23,7 +23,7 @@ public class PersonController : ControllerBase
        
         return result.IsValid() 
             ? Ok(result)
-            : BadRequest(result);
+            : BadRequest(new { result.Errors });
     }
 
     [HttpGet(Name = "GetPeople")]
@@ -33,6 +33,6 @@ public class PersonController : ControllerBase
        
         return result.IsValid() 
             ? Ok(result)
-            : BadRequest(result);
+            : BadRequest(new { result.Errors });
     }
 }

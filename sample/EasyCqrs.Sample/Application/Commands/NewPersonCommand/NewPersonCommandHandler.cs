@@ -4,7 +4,7 @@ using MediatR;
 
 namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 
-public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, CommandResult>
+public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, NewPersonCommandResult>
 {
     private readonly ILogger<NewPersonCommandHandler> _logger;
     private readonly IMediator _mediator;
@@ -15,14 +15,14 @@ public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, Co
         _mediator = mediator;
     }
 
-    public async Task<CommandResult> Handle(NewPersonCommandInput request, CancellationToken cancellationToken)
+    public async Task<NewPersonCommandResult> Handle(NewPersonCommandInput request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Registering person...");
 
+        var personId = Guid.NewGuid();
+
         await Task.Delay(1000, cancellationToken);
-
-        await _mediator.Publish(new NewPersonEventInput { PersonId = Guid.Empty }, cancellationToken);
-
-        return new CommandResult();
+        
+        return new NewPersonCommandResult(personId);
     }
 }
