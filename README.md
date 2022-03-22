@@ -163,7 +163,7 @@ Error result:
 
 ```
 
-[Checkout Samples]("https://github.com/tuliopaim/EasyCqrs/tree/master/sample/EasyCqrs.Sample/Application")
+[Checkout Samples](https://github.com/tuliopaim/EasyCqrs/tree/master/sample/EasyCqrs.Sample/Application)
 
 ---
 ## Queries
@@ -181,15 +181,15 @@ But in the Query's world you have some helpers:
 
 You may need to retrieve a list of itens, so you can create a result class, and inherit/use the `ListQueryResult<TResult>` that contains a `IEnumerable<TResult>`:
 
-Checkout the [ListQueryResult.cs]("https://github.com/tuliopaim/EasyCqrs/blob/master/src/EasyCqrs/Queries/ListQueryResult.cs")
+Checkout the [ListQueryResult.cs](https://github.com/tuliopaim/EasyCqrs/blob/master/src/EasyCqrs/Queries/ListQueryResult.cs)
 
 ### PagedQueryInput / PagedQueryResult
 
 You may also need to work with pagination in your queries, so you can make use of the `PagedQueryInput` and `PagedQueryResult<TResult>`:
 
-Checkout the [PagedQueryInput.cs]("https://github.com/tuliopaim/EasyCqrs/blob/master/src/EasyCqrs/Queries/PagedQueryInput.cs") and [PagedQueryResult.cs]("https://github.com/tuliopaim/EasyCqrs/blob/master/src/EasyCqrs/Queries/PagedQueryResult.cs")
+Checkout the [PagedQueryInput.cs](https://github.com/tuliopaim/EasyCqrs/blob/master/src/EasyCqrs/Queries/PagedQueryInput.cs) and [PagedQueryResult.cs](https://github.com/tuliopaim/EasyCqrs/blob/master/src/EasyCqrs/Queries/PagedQueryResult.cs)
 
-Checkout [Sample]("https://github.com/tuliopaim/EasyCqrs/blob/master/sample/EasyCqrs.Sample/Application/Queries/GetPeopleQuery/GetPeopleQueryHandler.cs")
+Checkout [Sample](https://github.com/tuliopaim/EasyCqrs/blob/master/sample/EasyCqrs.Sample/Application/Queries/GetPeopleQuery/GetPeopleQueryHandler.cs)
 
 ---
 ## Events
@@ -201,12 +201,12 @@ A Event work in a fire and forget way.
 
     There is not Validation or Results in Events
 
-Checkout [Sample]("https://github.com/tuliopaim/EasyCqrs/blob/master/sample/EasyCqrs.Sample/Application/Events/NewPersonEvent/NewPersonEventHandler.cs")
+Checkout [Sample](https://github.com/tuliopaim/EasyCqrs/blob/master/sample/EasyCqrs.Sample/Application/Events/NewPersonEvent/NewPersonEventHandler.cs)
 
 ---
 ## References
 
 Read more about 
-[Cqrs]("https://martinfowler.com/bliki/CQRS.html"), 
-[MediatR]("https://github.com/jbogard/MediatR"),
-[Validation Pipeline Behavior]("https://medium.com/tableless/fail-fast-validations-com-pipeline-behavior-no-mediatr-e-asp-net-core-f3854d3c21fa")
+[Cqrs](https://martinfowler.com/bliki/CQRS.html), 
+[MediatR](https://github.com/jbogard/MediatR),
+[Validation Pipeline Behavior](https://medium.com/tableless/fail-fast-validations-com-pipeline-behavior-no-mediatr-e-asp-net-core-f3854d3c21fa)
