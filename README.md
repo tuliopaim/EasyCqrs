@@ -20,7 +20,7 @@ Install-Package TP.EasyCqrs
 
 ### Registering
 
-Just use some of the AddCqrs extension methods on IServiceCollection to inject the required services in the DI container.
+You can use one of the AddCqrs extension methods on IServiceCollection to inject the required services in the DI container.
 
 You need to pass the Assemblies where the CQRS classes are located.
 
@@ -46,7 +46,7 @@ builder.Services.AddCqrs(
 ### CommandResult
 You can create a specifc CommandResult class by inheriting the `CommandResult` class.
    
-> :warning: **To validation and exception pipeline work properly you need to declare a parameterless contructor**, otherwise the code will not compile! :warning:
+> :warning: **To validation and exception pipelines work properly you need to declare a parameterless contructor**, otherwise the code will not compile! :warning:
 
 ```csharp
 using EasyCqrs.Commands;
@@ -89,6 +89,7 @@ public class NewPersonCommandInputValidator : CommandInputValidator<NewPersonCom
     public NewPersonCommandInputValidator()
     {
         RuleFor(x => x.Name)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .MinimumLength(2)
             .MaximumLength(150);
@@ -157,10 +158,24 @@ public class PersonController : ControllerBase
 }
 ```
 
-Error result:
+Success response:
+
+```json
+{
+  "newPersonId": "ce0e831b-0973-4e1a-9ecc-e8c4429784bd",
+  "errors": []
+}
+```
+
+Error response:
 
 ``` json
-
+{
+  "errors": [
+    "'Name' must not be empty.",
+    "'Age' must be greater than or equal to '18'."
+  ]
+}
 ```
 
 [Checkout Samples](https://github.com/tuliopaim/EasyCqrs/tree/master/sample/EasyCqrs.Sample/Application)
