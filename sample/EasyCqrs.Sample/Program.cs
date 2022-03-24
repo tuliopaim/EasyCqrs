@@ -1,5 +1,6 @@
 using EasyCqrs;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddCqrs(typeof(NewPersonCommandHandler).Assembly);
+
+ValidatorOptions.Global.LanguageManager.Enabled = false;
 
 var app = builder.Build();
 
