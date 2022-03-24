@@ -8,6 +8,7 @@ public class NewPersonCommandInputValidator : CommandInputValidator<NewPersonCom
     public NewPersonCommandInputValidator()
     {
         RuleFor(x => x.Name)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
             .MinimumLength(2)
             .MaximumLength(150);
