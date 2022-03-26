@@ -18,6 +18,7 @@ public class CqrsConfiguration
     internal bool WithLogPipeline { get; private set; } = true;
     internal bool WithValidationPipeline { get; private set; } = true;
     internal bool WithExceptionPipeline { get; private set; } = true;
+    internal bool WithNotificationPipeline { get; private set; } = true;
     
     public void DisableLogPipeline()
     {
@@ -32,5 +33,10 @@ public class CqrsConfiguration
     public void DisableExceptionPipeline()
     {
         WithExceptionPipeline = false;
+    }
+    
+    public void DisableNotificationPipeline()
+    {
+        WithNotificationPipeline = false;
     }
 }
