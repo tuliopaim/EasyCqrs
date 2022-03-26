@@ -1,3 +1,4 @@
+using EasyCqrs.Mvc;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 using MediatR;
@@ -7,7 +8,7 @@ namespace EasyCqrs.Sample.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PersonController : ControllerBase
+public class PersonController : CqrsController
 {
     private readonly IMediator _mediator;
 
@@ -21,18 +22,14 @@ public class PersonController : ControllerBase
     {
         var result = await _mediator.Send(commandInput);
        
-        return result.IsValid
-            ? Ok(result)
-            : BadRequest(result);
+        return HandleResult(result);
     }
 
     [HttpGet(Name = "GetPeople")]
     public async Task<IActionResult> GetPeople([FromQuery] GetPeopleQueryInput queryInput)
     {
         var result = await _mediator.Send(queryInput);
-       
-        return result.IsValid
-            ? Ok(result)
-            : BadRequest(result);
+
+        return HandleResult(result);
     }
 }
