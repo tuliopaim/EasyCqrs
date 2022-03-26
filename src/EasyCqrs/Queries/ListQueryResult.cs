@@ -1,6 +1,5 @@
 namespace EasyCqrs.Queries;
 
-public class ListQueryResult<TResult> : QueryResult
+public class ListQueryResult<TResult> : QueryResult<IEnumerable<TResult>>
 {
-    public IEnumerable<TResult> Results { get; set; } = new List<TResult>();
 }
