@@ -18,9 +18,8 @@ Install-Package TP.EasyCqrs
 ---
 ## Features
 
-* Auto injected handlers
-* Auto injected validators
 * Auto injected INotificator
+* Auto injected Handlers
 * Exception Pipeline
     * No unhandled exceptions inside Handlers
 * Log Pipeline
@@ -62,6 +61,35 @@ builder.Services.AddCqrs(
 ```
 
 ---
+
+## Notificator
+
+You can use the injected `INotificator` interface to gather error messages across the scope:
+
+```csharp
+public class SomeService
+{
+    private readonly INotificator _notificator;
+
+    public SomeService(INotificator notificator)
+    {
+        _notificator = notificator;
+    }
+
+    public async Task SomeProcessingMethod()
+    {
+        //...
+
+        if (SomethingIsWrong(foo, bar))
+        {
+            _notificator.AddNotification("Something is wrong!");
+            return;
+        }
+        
+        //...
+    }
+}
+```
 
 ## Commands
 
