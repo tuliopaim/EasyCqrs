@@ -2,6 +2,12 @@
 
 namespace EasyCqrs.Queries;
 
-public class QueryResult : MediatorResult
+public class QueryResult<TResult> : QueryResult
+{
+    public TResult? Result { get; set; }
+}
+
+public abstract class QueryResult : MediatorResult
 {
 }
+

@@ -1,5 +1,7 @@
+using EasyCqrs.Mvc;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
-using EasyCqrs.Sample.Application.Queries.GetPeopleQuery;
+using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
+using EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +9,7 @@ namespace EasyCqrs.Sample.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PersonController : ControllerBase
+public class PersonController : CqrsController
 {
     private readonly IMediator _mediator;
 
@@ -21,18 +23,22 @@ public class PersonController : ControllerBase
     {
         var result = await _mediator.Send(commandInput);
        
-        return result.IsValid() 
-            ? Ok(result)
-            : BadRequest(new { result.Errors });
+        return HandleResult(result);
     }
 
-    [HttpGet(Name = "GetPeople")]
-    public async Task<IActionResult> GetPeople([FromQuery] GetPeopleQueryInput queryInput)
+    [HttpGet("{id:guid}", Name = "GetPersonById")]
+    public async Task<IActionResult> GetPersonById(Guid id)
     {
-        var result = await _mediator.Send(queryInput);
-       
-        return result.IsValid() 
-            ? Ok(result)
-            : BadRequest(new { result.Errors });
+        var result = await _mediator.Send(new GetPersonByIdQueryInput(id)); 
+
+        return HandleResult(result);
+    }
+
+    [HttpGet("paginated", Name = "GetPeoplePaginated")]
+    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeoplePaginatedQueryInput paginatedQueryInput)
+    {
+        var result = await _mediator.Send(paginatedQueryInput);
+
+        return HandleResult(result);
     }
 }

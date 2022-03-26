@@ -4,16 +4,14 @@ public class MediatorResult : IMediatorResult
 {
     private readonly List<string> _errors = new();
 
-    public virtual IMediatorResult AddError(string error)
+    public virtual void AddError(string error)
     {
+        ArgumentNullException.ThrowIfNull(error);
+
         _errors.Add(error);
-        return this;
     }
 
-    public bool IsValid()
-    {
-        return !Errors.Any();
-    }
+    public bool IsValid => _errors.Count == 0;
 
-    public IEnumerable<string> Errors => _errors;
+    public IReadOnlyList<string> Errors => _errors;
 }

@@ -16,11 +16,30 @@ Install-Package TP.EasyCqrs
 ``` 
 
 ---
+## Features
+
+* Auto injected INotificator
+* Auto injected Handlers
+* Exception Pipeline
+    * No unhandled exceptions inside Handlers
+* Log Pipeline
+    * Logs entering and leaving handlers and the input serialized
+* Validation Pipeline
+    * Auto validate the inputs with the input validators before entering the handler
+* Notification Pipeline
+    * All the notifications will be added inside the result's Errors
+
+Read more about 
+[Cqrs](https://martinfowler.com/bliki/CQRS.html), 
+[MediatR](https://github.com/jbogard/MediatR),
+[MediatR Pipeline Behavior](https://codewithmukesh.com/blog/mediatr-pipeline-behaviour/)
+
+---
 ## Usage
 
 ### Registering
 
-You can use one of the AddCqrs extension methods on IServiceCollection to inject the required services in the DI container.
+You can use the AddCqrs extension method on IServiceCollection to inject and configure the required services in the DI container.
 
 You need to pass the Assemblies where the CQRS classes are located.
 
@@ -37,51 +56,85 @@ builder.Services.AddCqrs(
         config.DisableLogPipeline();
         config.DisableValidationPipeline();
         config.DisableExceptionPipeline();
+        config.DisableNotificationPipeline();
     });
 ```
 
 ---
-## Commands
 
-### CommandResult
-You can create a specifc CommandResult class by inheriting the `CommandResult` class.
-   
-> :warning: **To validation and exception pipelines work properly you need to declare a parameterless contructor**, otherwise the code will not compile! :warning:
+## Notificator
+
+You can use the injected `INotificator` interface to gather error messages across the scope:
 
 ```csharp
-using EasyCqrs.Commands;
-
-namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
-
-public class NewPersonCommandResult : CommandResult
+public class SomeService
 {
-    /* To validation and exception works properly */
-    public NewPersonCommandResult() {}
+    private readonly INotificator _notificator;
 
-    public NewPersonCommandResult(Guid newPersonId)
+    public SomeService(INotificator notificator)
     {
-        NewPersonId = newPersonId;
+        _notificator = notificator;
     }
-    
-    public Guid NewPersonId { get; set; }
-}   
+
+    public async Task SomeProcessingMethod()
+    {
+        //...
+
+        if (SomethingIsWrong(foo, bar))
+        {
+            _notificator.AddNotification("Something is wrong!");
+            return;
+        }
+        
+        //...
+    }
+}
 ```
 
+## Commands
+
+Each command scope are composed with:
+
+* CommandResult
+* CommandInput
+* CommandInputValidator
+* CommandHandler 
+
+### CommandResult
+
+The `CommandResult` express what is returned from your `CommandHandler`, inherit from it if you want to return any extra information.
+   
+> :warning: To validation and exception pipelines work properly your custom command result class **must** have a parameterless contructor, otherwise your handler will not compile.
+:warning:
+
+```csharp
+public class NewPersonCommandResult : CommandResult
+{
+    public Guid Id { get; set; }
+}     
+```
     Specifc CommandResult class are not required, you can use the CommandResult instead.
 
+
 ### CommandInput
-You create a Command Input class by inheriting from `CommandInput<TResult>` class and specifying the result type, in this example `NewPersonCommandResult`
+You create a Command Input class by inheriting from `CommandInput<TCommandResult>`, where the `TCommandResult` generics will be the CommandResult, for this example, `NewPersonCommandResult`
 
 ```csharp
 public class NewPersonCommandInput : CommandInput<NewPersonCommandResult>
 {
+    public NewPersonCommandInput(string? name, int age)
+    {
+        Name = name;
+        Age = age;
+    }
+
     public string? Name { get; set; }
     public int Age { get; set; }
 }
 ```
 
 ### CommandInputValidator
-You can also create a Input Validator using FluentValidation sintax. It will be used in the Validator Pipeline to validate the Input.
+You can also create an Input Validator using FluentValidation, it will be used in the ValidatonPipeline to validate the `CommandInput`.
 
 ``` csharp
 public class NewPersonCommandInputValidator : CommandInputValidator<NewPersonCommandInput>
@@ -100,39 +153,271 @@ public class NewPersonCommandInputValidator : CommandInputValidator<NewPersonCom
 }
 ``` 
 
-    The InputValidatior class is also optional
+    The InputValidatior class is optional
 
 ### CommandHandler
-The CommandHandler must inherit from `ICommandHandler<TCommandInput, TCommandResult>` and implement the `Handle` method.
+The CommandHandler is where your orchestration logic will be created, you could have calls to services, repositories and basicly anything that you need to do in order to complete your command mission.
 
-If you dont disabled the pipelines at startup, MediatR will make sure that your input will be logged and validated and every unhandled exception inside the `Handle` scope will be treated.
+Your CommandHandler must inherit from `ICommandHandler<TCommandInput, TCommandResult>`, `TCommandInput` been your specific CommandInput, `TCommandResult` been your CommandResult, specific or not.
+
+You must implement the abstract `Handle` method, this is the method that MediatR will call when you send a CommandInput
+
+If you dont disabled the pipelines at startup, MediatR will make sure that your CommandInput will be logged and validated and every unhandled exception inside the `Handle` scope will be treated.
 
 ``` csharp
 public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, NewPersonCommandResult>
 {
-    private readonly ILogger<NewPersonCommandHandler> _logger;
+    private readonly IPersonRepository _personRepository;
     private readonly IMediator _mediator;
 
-    public NewPersonCommandHandler(ILogger<NewPersonCommandHandler> logger, IMediator mediator)
+    public NewPersonCommandHandler(
+        IPersonRepository personRepository,
+        IMediator mediator)
     {
-        _logger = logger;
+        _personRepository = personRepository;
         _mediator = mediator;
     }
 
     public async Task<NewPersonCommandResult> Handle(NewPersonCommandInput request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Registering person...");
+        var person = new Person(request.Name!, request.Age);
 
-        var personId = Guid.NewGuid();
+        _personRepository.AddPerson(person);
 
-        await Task.Delay(1000, cancellationToken);
+        await _mediator.Publish(new NewPersonEventInput { PersonId = person.Id }, cancellationToken);
+
+        return new NewPersonCommandResult { Id = person.Id };
+    }
+}
+```
+---
+
+## Queries
+
+Each query must retriave a result. Period. EasyCqrs provides the base classes needed to retrieve:
+
+* A single object: `QueryResult<TResult>`
+* A list of objects: `ListQueryResult<TResult>` 
+* A paginated list of objects: `PaginatedQueryResult<TResult>` 
+
+The inputs must inherit from `QueryInput<TQueryResult>` or `PaginatedQueryInput<TQueryResult>`, and can carry filters or any information required to return the result(s). 
+
+The queries scope works like the Command's scope:
+
+* A result class
+* An input class
+* An input validator class
+* A query handler
+
+### QueryResult
+
+You can either create a SpecificQueryResult inheriting from `QueryResult<TResult>` class or use it directly, in this example i will use 
+`QueryResult<GetPersonByIdResult>` Directly
+
+``` csharp
+// QueryResult base class
+public class QueryResult<TResult> : QueryResult
+{
+    public TResult? Result { get; set; }
+}
+
+// you could also do this
+public class FooQueryResult : QueryResult<TResult> { }
+```
+
+### QueryInput
+
+``` csharp
+public class GetPersonByIdQueryInput : QueryInput<QueryResult<GetPersonByIdResult>>
+{
+    public GetPersonByIdQueryInput(Guid id)
+    {
+        Id = id;
+    }
+
+    public Guid Id { get; set; }
+}
+```
+
+### QueryHandler
+
+``` csharp
+public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQueryInput, QueryResult<GetPersonByIdResult>>
+{
+    private readonly IPersonRepository _personRepository;
+
+    public GetPersonByIdQueryHandler(IPersonRepository personRepository)
+    {
+        _personRepository = personRepository;
+    }
+    public Task<QueryResult<GetPersonByIdResult>> Handle(GetPersonByIdQueryInput request, CancellationToken cancellationToken)
+    {
+        var person = _personRepository.GetPeople().FirstOrDefault(x => x.Id == request.Id);
         
-        return new NewPersonCommandResult(personId);
+        var personResult = GetPersonByIdResult.FromPerson(person);
+
+        return Task.FromResult(new QueryResult<GetPersonByIdResult>
+        {
+            Result = personResult
+        });
     }
 }
 ```
 
-This will keep your controllers nice and clean, you just need to inject the `IMediator` interface:
+### ListQueryResult
+
+The `ListQueryResult<TQueryResult>` helper class has a `IEnumerable<TResult>` as Result, and can be used if you need to retreive a list of objects:
+
+```csharp
+// ListQueryResult base class
+public class ListQueryResult<TResult> : QueryResult<IEnumerable<TResult>>
+{
+}
+
+// you could also do this
+public class FooQueryResult : ListQueryResult<TResult> { }
+```
+
+
+### PaginatedQueryInput
+
+The `PaginatedQueryInput<TQueryResult>` helper class contains a `PageSize` and `PageNumber` properties. You can inherit from it and use any other custom filter properities you need.. 
+
+``` csharp
+public class GetPeoplePaginatedQueryInput : PaginatedQueryInput<GetPeoplePaginatedQueryResult>
+{
+    public string? Name { get; set; }
+    public int Age { get; set; }
+}
+
+public class GetPeoplePaginatedQueryInputValidator : QueryInputValidator<GetPeoplePaginatedQueryInput>
+{
+    public GetPeoplePaginatedQueryInputValidator()
+    {
+        RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(0);
+        RuleFor(x => x.PageSize).InclusiveBetween(1, 50);
+    }
+}
+```
+### PaginatedQueryResult
+
+The `PaginatedQueryResult<TResult>` inherit from `ListQueryResult<TResult>`, witch means that it has a `IEnumerable<TResult>` as Result, but also a `QueryPagination` property, with pagination realted information.
+
+```csharp
+// PaginatedQueryResult base class
+public class PaginatedQueryResult<TResult> : ListQueryResult<TResult>
+{
+    public QueryPagination Pagination { get; set; } = new();
+}
+
+//you could also do this
+public class GetPeoplePaginatedQueryResult : PaginatedQueryResult<GetPeopleResult> { }
+```
+
+Pagination Handler example:
+
+``` csharp
+public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQueryInput, GetPeoplePaginatedQueryResult>
+{
+    private readonly IPersonRepository _repository;
+
+    public GetPeoplePaginatedQueryHandler(IPersonRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public Task<GetPeoplePaginatedQueryResult> Handle(GetPeoplePaginatedQueryInput request, CancellationToken cancellationToken)
+    {
+        var filteredData = GetFilteredPeople(request);
+        
+        var total = filteredData.Count();
+        
+        var paginatedResult = filteredData
+            .OrderBy(x => x.Name)
+            .Skip(request.PageNumber * request.PageSize)
+            .Take(request.PageSize)
+            .Select(x => new GetPeopleResult
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Age = x.Age,
+            }).ToList();
+
+        return Task.FromResult(new GetPeoplePaginatedQueryResult
+        {
+            Result = paginatedResult,
+            Pagination = new QueryPagination
+            {
+                PageNumber = request.PageNumber,
+                PageSize = paginatedResult.Count,
+                TotalElements = total
+            }
+        });
+    }
+
+    private IQueryable<Person> GetFilteredPeople(GetPeoplePaginatedQueryInput request)
+    {
+        var filteredData = _repository.GetPeople();
+
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            filteredData = filteredData.Where(x => x.Name.Contains(request.Name));
+        }
+
+        if (request.Age != default)
+        {
+            filteredData = filteredData.Where(x => x.Age == request.Age);
+        }
+
+        return filteredData;
+    }
+}
+```
+
+## Events
+
+Events works in a fire and forget way.
+
+* Create a Input that inherit from `EventInput`
+* Create a handler that inherit from `IEventHandler`
+
+    There is not Validation or Results in Events
+
+### EventInput
+
+``` csharp
+public class NewPersonEventInput : EventInput
+{
+    public Guid PersonId { get; set; }
+}
+```
+
+### EventHandler
+
+``` csharp
+public class NewPersonEventHandler : IEventHandler<NewPersonEventInput>
+{
+    private readonly ILogger<NewPersonEventHandler> _logger;
+
+    public NewPersonEventHandler(ILogger<NewPersonEventHandler> logger)
+    {
+        _logger = logger;
+    }
+
+    public Task Handle(NewPersonEventInput notification, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Person [{PersonId}] created!", notification.PersonId);
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+---
+
+## Controllers
+
+EasyCqrs will keep your controllers nice and clean, you just need to inject and use the `IMediator` interface, without worring about logging, validation and unhandled exceptions:
 
 ``` csharp
 [ApiController]
@@ -155,15 +440,66 @@ public class PersonController : ControllerBase
             ? Ok(result)
             : BadRequest(new { result.Errors });
     }
+    
+    [HttpGet("{id:guid}", Name = "GetPersonById")]
+    public async Task<IActionResult> GetPersonById(Guid id)
+    {
+        var result = await _mediator.Send(new GetPersonByIdQueryInput(id)); 
+
+        return result.IsValid() 
+            ? Ok(result)
+            : BadRequest(new { result.Errors });
+    }
+
+    [HttpGet("paginated", Name = "GetPeoplePaginated")]
+    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeoplePaginatedQueryInput paginatedQueryInput)
+    {
+        var result = await _mediator.Send(paginatedQueryInput);
+
+        return result.IsValid() 
+            ? Ok(result)
+            : BadRequest(new { result.Errors });
+    }
 }
 ```
 
-Success response:
+You can also use the `CqrsController`, in order to use the `HandleResult` method:
 
-```json
+``` csharp
+[ApiController]
+[Route("[controller]")]
+public class PersonController : CqrsController
 {
-  "newPersonId": "ce0e831b-0973-4e1a-9ecc-e8c4429784bd",
-  "errors": []
+    private readonly IMediator _mediator;
+
+    public PersonController(IMediator mediator)
+    {
+        _mediator = mediator;
+    }
+
+    [HttpPost(Name = "NewPerson")]
+    public async Task<IActionResult> NewPerson([FromBody] NewPersonCommandInput commandInput)
+    {
+        var result = await _mediator.Send(commandInput);
+       
+        return HandleResult(result);
+    }
+
+    [HttpGet("{id:guid}", Name = "GetPersonById")]
+    public async Task<IActionResult> GetPersonById(Guid id)
+    {
+        var result = await _mediator.Send(new GetPersonByIdQueryInput(id)); 
+
+        return HandleResult(result);
+    }
+
+    [HttpGet("paginated", Name = "GetPeoplePaginated")]
+    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeoplePaginatedQueryInput paginatedQueryInput)
+    {
+        var result = await _mediator.Send(paginatedQueryInput);
+
+        return HandleResult(result);
+    }
 }
 ```
 
@@ -171,6 +507,7 @@ Error response:
 
 ``` json
 {
+  "isValid": false,
   "errors": [
     "'Name' must not be empty.",
     "'Age' must be greater than or equal to '18'."
@@ -178,50 +515,59 @@ Error response:
 }
 ```
 
-[Checkout Samples](https://github.com/tuliopaim/EasyCqrs/tree/master/sample/EasyCqrs.Sample/Application)
+NewPerson Success response:
 
----
-## Queries
+```json
+{
+  "id": "26036708-8d3d-4fa3-81c8-a391f70131c0",
+  "isValid": true,
+  "errors": []
+}
+```
 
-A query work in the same way of the Command:
+GetPersonById Success response:
 
-* Create (or not) a result inheriting from `QueryResult`
-* Create a Input inheriting from `QueryInput<TQueryResult>`
-* Create (or not) a Validator inheriting from `QueryInputValidator<TQueryInput>`
-* Create a Handler inheriting from `IQueryHandler<TQueryInput, TQueryResult>`
+``` json
+{
+  "result": {
+    "id": "26036708-8d3d-4fa3-81c8-a391f70131c0",
+    "name": "Person Y",
+    "age": 69
+  },
+  "isValid": true,
+  "errors": []
+}
+```
 
-But in the Query's world you have some helpers:
+GetPeoplePaginated Success response:
 
-### ListQueryResult
-
-You may need to retrieve a list of itens, so you can create a result class, and inherit/use the `ListQueryResult<TResult>` that contains a `IEnumerable<TResult>`:
-
-Checkout the [ListQueryResult.cs](https://github.com/tuliopaim/EasyCqrs/blob/master/src/EasyCqrs/Queries/ListQueryResult.cs)
-
-### PagedQueryInput / PagedQueryResult
-
-You may also need to work with pagination in your queries, so you can make use of the `PagedQueryInput` and `PagedQueryResult<TResult>`:
-
-Checkout the [PagedQueryInput.cs](https://github.com/tuliopaim/EasyCqrs/blob/master/src/EasyCqrs/Queries/PagedQueryInput.cs) and [PagedQueryResult.cs](https://github.com/tuliopaim/EasyCqrs/blob/master/src/EasyCqrs/Queries/PagedQueryResult.cs)
-
-Checkout [Sample](https://github.com/tuliopaim/EasyCqrs/blob/master/sample/EasyCqrs.Sample/Application/Queries/GetPeopleQuery/GetPeopleQueryHandler.cs)
-
----
-## Events
-
-A Event work in a fire and forget way.
-
-* Create a Input that inherit from `EventInput`
-* Create a handler that inherit from `IEventHandler`
-
-    There is not Validation or Results in Events
-
-Checkout [Sample](https://github.com/tuliopaim/EasyCqrs/blob/master/sample/EasyCqrs.Sample/Application/Events/NewPersonEvent/NewPersonEventHandler.cs)
-
----
-## References
-
-Read more about 
-[Cqrs](https://martinfowler.com/bliki/CQRS.html), 
-[MediatR](https://github.com/jbogard/MediatR),
-[Validation Pipeline Behavior](https://medium.com/tableless/fail-fast-validations-com-pipeline-behavior-no-mediatr-e-asp-net-core-f3854d3c21fa)
+``` json
+{
+  "pagination": {
+    "totalElements": 4,
+    "pageSize": 2,
+    "pageNumber": 0,
+    "totalPages": 2,
+    "firstPage": 0,
+    "lastPage": 1,
+    "hasPrevPage": false,
+    "hasNextPage": true,
+    "prevPage": 0,
+    "nextPage": 1
+  },
+  "result": [
+    {
+      "id": "60e7c9cf-f7c2-41e4-b49b-adc4856fd097",
+      "name": "Person W",
+      "age": 40
+    },
+    {
+      "id": "4d91d905-da80-4da1-ae22-bf7cc79ba9df",
+      "name": "Person X",
+      "age": 22
+    }
+  ],
+  "isValid": true,
+  "errors": []
+}
+```

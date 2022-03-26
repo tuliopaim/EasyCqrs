@@ -1,5 +1,6 @@
 using EasyCqrs;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
+using EasyCqrs.Sample.Repositories;
 using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSingleton<IPersonRepository, PersonRepository>();
 
 builder.Services.AddCqrs(typeof(NewPersonCommandHandler).Assembly);
 
