@@ -1,28 +1,24 @@
 ﻿using EasyCqrs.Queries;
 using EasyCqrs.Sample.Domain;
+using EasyCqrs.Sample.Repositories;
 
 namespace EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 
 public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQueryInput, GetPeoplePaginatedQueryResult>
 {
+    private readonly IPersonRepository _repository;
+
+    public GetPeoplePaginatedQueryHandler(IPersonRepository repository)
+    {
+        _repository = repository;
+    }
+
     public Task<GetPeoplePaginatedQueryResult> Handle(GetPeoplePaginatedQueryInput request, CancellationToken cancellationToken)
     {
-        var filteredData = GetPersons();
-
-        if (!string.IsNullOrWhiteSpace(request.Name))
-        {
-            filteredData = filteredData.Where(x => x.Name.Contains(request.Name));
-        }
-
-        if (request.Age != default)
-        {
-            filteredData = filteredData.Where(x => x.Age == request.Age);
-        }
-
-        // retreive your total filtered data count from your data source...
+        var filteredData = GetFilteredPeople(request);
+        
         var total = filteredData.Count();
-
-        // retreive your paginated data from your data source...
+        
         var paginatedResult = filteredData
             .OrderBy(x => x.Name)
             .Skip(request.PageNumber * request.PageSize)
@@ -46,15 +42,20 @@ public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQu
         });
     }
 
-    private static IQueryable<Person> GetPersons()
+    private IQueryable<Person> GetFilteredPeople(GetPeoplePaginatedQueryInput request)
     {
-        var list = new List<Person>(20);
+        var filteredData = _repository.GetPeople();
 
-        for (var i = 1; i <= 20; i++)
+        if (!string.IsNullOrWhiteSpace(request.Name))
         {
-            list.Add(new Person($"Person {i:D2}", new Random().Next(20, 90)));
+            filteredData = filteredData.Where(x => x.Name.Contains(request.Name));
         }
 
-        return list.AsQueryable();
+        if (request.Age != default)
+        {
+            filteredData = filteredData.Where(x => x.Age == request.Age);
+        }
+
+        return filteredData;
     }
 }

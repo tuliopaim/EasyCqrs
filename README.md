@@ -140,22 +140,22 @@ If you dont disabled the pipelines at startup, MediatR will make sure that your 
 ``` csharp
 public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, NewPersonCommandResult>
 {
-    private readonly ILogger<NewPersonCommandHandler> _logger;
+    private readonly IPersonRepository _personRepository;
     private readonly IMediator _mediator;
 
-    public NewPersonCommandHandler(ILogger<NewPersonCommandHandler> logger, IMediator mediator)
+    public NewPersonCommandHandler(
+        IPersonRepository personRepository,
+        IMediator mediator)
     {
-        _logger = logger;
+        _personRepository = personRepository;
         _mediator = mediator;
     }
 
     public async Task<NewPersonCommandResult> Handle(NewPersonCommandInput request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Registering person...");
+        var person = new Person(request.Name!, request.Age);
 
-        await Task.Delay(1000, cancellationToken);
-
-        var person = new Person(request.Name, request.Age);
+        _personRepository.AddPerson(person);
 
         await _mediator.Publish(new NewPersonEventInput { PersonId = person.Id }, cancellationToken);
 
@@ -217,11 +217,17 @@ public class GetPersonByIdQueryInput : QueryInput<QueryResult<GetPersonByIdResul
 ``` csharp
 public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQueryInput, QueryResult<GetPersonByIdResult>>
 {
+    private readonly IPersonRepository _personRepository;
+
+    public GetPersonByIdQueryHandler(IPersonRepository personRepository)
+    {
+        _personRepository = personRepository;
+    }
     public Task<QueryResult<GetPersonByIdResult>> Handle(GetPersonByIdQueryInput request, CancellationToken cancellationToken)
     {
-        //get the result from your data source...
-
-        var personResult = new GetPersonByIdResult(request.Id, "Person 1", 24);
+        var person = _personRepository.GetPeople().FirstOrDefault(x => x.Id == request.Id);
+        
+        var personResult = GetPersonByIdResult.FromPerson(person);
 
         return Task.FromResult(new QueryResult<GetPersonByIdResult>
         {
@@ -286,24 +292,19 @@ Pagination Handler example:
 ``` csharp
 public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQueryInput, GetPeoplePaginatedQueryResult>
 {
+    private readonly IPersonRepository _repository;
+
+    public GetPeoplePaginatedQueryHandler(IPersonRepository repository)
+    {
+        _repository = repository;
+    }
+
     public Task<GetPeoplePaginatedQueryResult> Handle(GetPeoplePaginatedQueryInput request, CancellationToken cancellationToken)
     {
-        var filteredData = GetPersons();
-
-        if (!string.IsNullOrWhiteSpace(request.Name))
-        {
-            filteredData = filteredData.Where(x => x.Name.Contains(request.Name));
-        }
-
-        if (request.Age != default)
-        {
-            filteredData = filteredData.Where(x => x.Age == request.Age);
-        }
-
-        // retreive your total filtered data count from your data source...
+        var filteredData = GetFilteredPeople(request);
+        
         var total = filteredData.Count();
-
-        // retreive your paginated data from your data source...
+        
         var paginatedResult = filteredData
             .OrderBy(x => x.Name)
             .Skip(request.PageNumber * request.PageSize)
@@ -327,16 +328,21 @@ public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQu
         });
     }
 
-    private static IQueryable<Person> GetPersons()
+    private IQueryable<Person> GetFilteredPeople(GetPeoplePaginatedQueryInput request)
     {
-        var list = new List<Person>(20);
+        var filteredData = _repository.GetPeople();
 
-        for (var i = 1; i <= 20; i++)
+        if (!string.IsNullOrWhiteSpace(request.Name))
         {
-            list.Add(new Person($"Person {i:D2}", new Random().Next(20, 90)));
+            filteredData = filteredData.Where(x => x.Name.Contains(request.Name));
         }
 
-        return list.AsQueryable();
+        if (request.Age != default)
+        {
+            filteredData = filteredData.Where(x => x.Age == request.Age);
+        }
+
+        return filteredData;
     }
 }
 ```
@@ -486,7 +492,7 @@ NewPerson Success response:
 
 ```json
 {
-  "id": "58093d52-1dde-4da1-8947-91e148934862",
+  "id": "26036708-8d3d-4fa3-81c8-a391f70131c0",
   "isValid": true,
   "errors": []
 }
@@ -497,9 +503,9 @@ GetPersonById Success response:
 ``` json
 {
   "result": {
-    "id": "58093d52-1dde-4da1-8947-91e148934862",
-    "name": "Person 1",
-    "age": 24
+    "id": "26036708-8d3d-4fa3-81c8-a391f70131c0",
+    "name": "Person Y",
+    "age": 69
   },
   "isValid": true,
   "errors": []
@@ -511,27 +517,27 @@ GetPeoplePaginated Success response:
 ``` json
 {
   "pagination": {
-    "totalElements": 20,
+    "totalElements": 4,
     "pageSize": 2,
-    "pageNumber": 3,
-    "totalPages": 10,
+    "pageNumber": 0,
+    "totalPages": 2,
     "firstPage": 0,
-    "lastPage": 9,
-    "hasPrevPage": true,
+    "lastPage": 1,
+    "hasPrevPage": false,
     "hasNextPage": true,
-    "prevPage": 2,
-    "nextPage": 4
+    "prevPage": 0,
+    "nextPage": 1
   },
   "result": [
     {
-      "id": "2727c295-ead6-4b39-8a9e-99a51d433d23",
-      "name": "Person 07",
-      "age": 59
+      "id": "60e7c9cf-f7c2-41e4-b49b-adc4856fd097",
+      "name": "Person W",
+      "age": 40
     },
     {
-      "id": "1dcf3091-c3f2-4e49-ac9d-74ea4db83606",
-      "name": "Person 08",
-      "age": 21
+      "id": "4d91d905-da80-4da1-ae22-bf7cc79ba9df",
+      "name": "Person X",
+      "age": 22
     }
   ],
   "isValid": true,
