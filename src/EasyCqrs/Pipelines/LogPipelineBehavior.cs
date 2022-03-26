@@ -1,6 +1,7 @@
 ﻿using EasyCqrs.Mediator;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace EasyCqrs.Pipelines;
 
@@ -17,7 +18,7 @@ public class LogPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
 
     public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
     {
-        _logger.LogDebug("{RequestType} - Entering handler... {@Request}", typeof(TRequest).Name, request);
+        _logger.LogDebug("{RequestType} - Entering handler... {Request}", typeof(TRequest).Name, JsonConvert.SerializeObject(request));
 
         var result = await next();
 

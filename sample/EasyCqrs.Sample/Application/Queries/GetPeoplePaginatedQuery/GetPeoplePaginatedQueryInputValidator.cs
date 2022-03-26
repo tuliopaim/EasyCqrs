@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 
-public class GetPeopleQueryInputValidator : QueryInputValidator<GetPeopleQueryInput>
+public class GetPeoplePaginatedQueryInputValidator : QueryInputValidator<GetPeoplePaginatedQueryInput>
 {
-    public GetPeopleQueryInputValidator()
+    public GetPeoplePaginatedQueryInputValidator()
     {
         RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(0);
         RuleFor(x => x.PageSize).InclusiveBetween(1, 50);

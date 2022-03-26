@@ -2,7 +2,7 @@
 
 namespace EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 
-public class GetPeopleQueryInput : PagedQueryInput<GetPeopleQueryResult>
+public class GetPeoplePaginatedQueryInput : PaginatedQueryInput<GetPeoplePaginatedQueryResult>
 {
     public string? Name { get; set; }
     public int Age { get; set; }

@@ -1,6 +1,7 @@
 using EasyCqrs.Mvc;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
+using EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,10 +26,18 @@ public class PersonController : CqrsController
         return HandleResult(result);
     }
 
-    [HttpGet(Name = "GetPeople")]
-    public async Task<IActionResult> GetPeople([FromQuery] GetPeopleQueryInput queryInput)
+    [HttpGet("{id:guid}", Name = "GetPersonById")]
+    public async Task<IActionResult> GetPersonById(Guid id)
     {
-        var result = await _mediator.Send(queryInput);
+        var result = await _mediator.Send(new GetPersonByIdQueryInput(id)); 
+
+        return HandleResult(result);
+    }
+
+    [HttpGet("paginated", Name = "GetPeoplePaginated")]
+    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeoplePaginatedQueryInput paginatedQueryInput)
+    {
+        var result = await _mediator.Send(paginatedQueryInput);
 
         return HandleResult(result);
     }
