@@ -21,9 +21,10 @@ public class NotificationPipelineBehavior<TRequest, TResponse> : IPipelineBehavi
 
         if (_notificator.IsValid) return response;
 
-        foreach (var result in _notificator.Notifications.Select(x => x.Message))
+        foreach (var notification in _notificator.Notifications)
         {
-            response.AddError(result);
+            if (response.Errors.Contains(notification.Message)) continue;
+            response.AddError(notification.Message);
         }
 
         return response;
