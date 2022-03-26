@@ -222,7 +222,7 @@ public class QueryResult<TResult> : QueryResult
 }
 
 // you could also do this
-public class FooQueryResult : QueryResult<TResult> { }
+public class GetPersonByIdQueryResult : QueryResult<GetPersonByIdResult> { }
 ```
 
 ### QueryInput
