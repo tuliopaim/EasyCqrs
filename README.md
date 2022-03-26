@@ -18,10 +18,9 @@ Install-Package TP.EasyCqrs
 ---
 ## Features
 
-* Serilog
 * Auto injected handlers
 * Auto injected validators
-* Auto inject INotificator
+* Auto injected INotificator
 * Exception Pipeline
     * No unhandled exceptions inside Handlers
 * Log Pipeline

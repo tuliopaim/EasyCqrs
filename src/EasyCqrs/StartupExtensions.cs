@@ -4,7 +4,6 @@ using EasyCqrs.Pipelines;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog;
 
 namespace EasyCqrs;
 
@@ -35,24 +34,11 @@ public static class StartupExtensions
         config?.Invoke(cqrsConfiguration);
 
         return services
-            .AddLogging()
             .AddMediator(cqrsConfiguration)
             .AddPipelines(cqrsConfiguration)
             .AddValidators(cqrsConfiguration);
     }
     
-    private static IServiceCollection AddLogging(this IServiceCollection services)
-    {
-        Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            .Enrich.WithEnvironmentName()
-            .CreateLogger();
-
-        services.AddLogging(x => x.AddSerilog());
-
-        return services;
-    }
-
     private static IServiceCollection AddMediator(this IServiceCollection services,
         CqrsConfiguration cqrsConfiguration)
     {
