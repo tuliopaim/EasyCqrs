@@ -156,9 +156,9 @@ public class NewPersonCommandInputValidator : CommandInputValidator<NewPersonCom
     The InputValidatior class is optional
 
 ### CommandHandler
-The CommandHandler is where your orchestration will be, mapping to entity, calls to Services, Repositories, anything that you need to do in order to complete your command mission.
+The CommandHandler is where your orchestration logic will be created, you could have calls to services, repositories and basicly anything that you need to do in order to complete your command mission.
 
-It must inherit from `ICommandHandler<TCommandInput, TCommandResult>`, `TCommandInput` been your specific CommandInput, `TCommandResult` been your CommandResult, specific or not.
+Your CommandHandler must inherit from `ICommandHandler<TCommandInput, TCommandResult>`, `TCommandInput` been your specific CommandInput, `TCommandResult` been your CommandResult, specific or not.
 
 You must implement the abstract `Handle` method, this is the method that MediatR will call when you send a CommandInput
 
