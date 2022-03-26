@@ -1,6 +1,6 @@
 ﻿using EasyCqrs.Queries;
 
-namespace EasyCqrs.Sample.Application.Queries.GetPeopleQuery;
+namespace EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 
 public class GetPeopleQueryInput : PagedQueryInput<GetPeopleQueryResult>
 {

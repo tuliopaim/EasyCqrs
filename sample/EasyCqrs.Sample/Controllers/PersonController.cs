@@ -1,5 +1,5 @@
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
-using EasyCqrs.Sample.Application.Queries.GetPeopleQuery;
+using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +21,7 @@ public class PersonController : ControllerBase
     {
         var result = await _mediator.Send(commandInput);
        
-        return result.IsValid() 
+        return result.IsValid
             ? Ok(result)
             : BadRequest(result);
     }
@@ -31,7 +31,7 @@ public class PersonController : ControllerBase
     {
         var result = await _mediator.Send(queryInput);
        
-        return result.IsValid() 
+        return result.IsValid
             ? Ok(result)
             : BadRequest(result);
     }
