@@ -288,13 +288,23 @@ public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQu
 {
     public Task<GetPeoplePaginatedQueryResult> Handle(GetPeoplePaginatedQueryInput request, CancellationToken cancellationToken)
     {
-        // retreive your total filtered data count from your data source...
+        var filteredData = GetPersons();
 
-        var total = GetPersons().Count();
+        if (!string.IsNullOrWhiteSpace(request.Name))
+        {
+            filteredData = filteredData.Where(x => x.Name.Contains(request.Name));
+        }
+
+        if (request.Age != default)
+        {
+            filteredData = filteredData.Where(x => x.Age == request.Age);
+        }
+
+        // retreive your total filtered data count from your data source...
+        var total = filteredData.Count();
 
         // retreive your paginated data from your data source...
-
-        var paginatedResult = GetPersons()
+        var paginatedResult = filteredData
             .OrderBy(x => x.Name)
             .Skip(request.PageNumber * request.PageSize)
             .Take(request.PageSize)
