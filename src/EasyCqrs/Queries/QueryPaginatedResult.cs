@@ -1,6 +1,6 @@
 ﻿namespace EasyCqrs.Queries;
 
-public class PaginatedQueryResult<TResult> : ListQueryResult<TResult>
+public class QueryPaginatedResult<TResult> : QueryListResult<TResult>
 {
     public QueryPagination Pagination { get; set; } = new();
 }
