@@ -197,10 +197,10 @@ public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, Ne
 Each query must retriave a result. Period. EasyCqrs provides the base classes needed to retrieve:
 
 * A single object: `QueryResult<TResult>`
-* A list of objects: `ListQueryResult<TResult>` 
-* A paginated list of objects: `PaginatedQueryResult<TResult>` 
+* A list of objects: `QueryListResult<TResult>` 
+* A paginated list of objects: `QueryPaginatedResult<TResult>` 
 
-The inputs must inherit from `QueryInput<TQueryResult>` or `PaginatedQueryInput<TQueryResult>`, and can carry filters or any information required to return the result(s). 
+The inputs must inherit from `QueryInput<TQueryResult>` or `QueryPaginatedInput<TQueryResult>`, and can carry filters or any information required to return the result(s). 
 
 The queries scope works like the Command's scope:
 
@@ -264,69 +264,69 @@ public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQueryInput, 
 }
 ```
 
-### ListQueryResult
+### QueryListResult
 
-The `ListQueryResult<TQueryResult>` helper class has a `IEnumerable<TResult>` as Result, and can be used if you need to retreive a list of objects:
+The `QueryListResult<TQueryResult>` helper class has a `IEnumerable<TResult>` as Result, and can be used if you need to retreive a list of objects:
 
 ```csharp
-// ListQueryResult base class
-public class ListQueryResult<TResult> : QueryResult<IEnumerable<TResult>>
+// QueryListResult base class
+public class QueryListResult<TResult> : QueryResult<IEnumerable<TResult>>
 {
 }
 
 // you could also do this
-public class FooQueryResult : ListQueryResult<TResult> { }
+public class FooQueryResult : QueryListResult<TResult> { }
 ```
 
 
-### PaginatedQueryInput
+### QueryPaginatedInput
 
-The `PaginatedQueryInput<TQueryResult>` helper class contains a `PageSize` and `PageNumber` properties. You can inherit from it and use any other custom filter properities you need.. 
+The `QueryPaginatedInput<TQueryResult>` helper class contains a `PageSize` and `PageNumber` properties. You can inherit from it and use any other custom filter properities you need.. 
 
 ``` csharp
-public class GetPeoplePaginatedQueryInput : PaginatedQueryInput<GetPeoplePaginatedQueryResult>
+public class GetPeopleQueryPaginatedInput : QueryPaginatedInput<GetPeopleQueryPaginatedResult>
 {
     public string? Name { get; set; }
     public int Age { get; set; }
 }
 
-public class GetPeoplePaginatedQueryInputValidator : QueryInputValidator<GetPeoplePaginatedQueryInput>
+public class GetPeopleQueryPaginatedInputValidator : QueryInputValidator<GetPeopleQueryPaginatedInput>
 {
-    public GetPeoplePaginatedQueryInputValidator()
+    public GetPeopleQueryPaginatedInputValidator()
     {
         RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(0);
         RuleFor(x => x.PageSize).InclusiveBetween(1, 50);
     }
 }
 ```
-### PaginatedQueryResult
+### QueryPaginatedResult
 
-The `PaginatedQueryResult<TResult>` inherit from `ListQueryResult<TResult>`, witch means that it has a `IEnumerable<TResult>` as Result, but also a `QueryPagination` property, with pagination realted information.
+The `QueryPaginatedResult<TResult>` inherit from `QueryListResult<TResult>`, witch means that it has a `IEnumerable<TResult>` as Result, but also a `QueryPagination` property, with pagination realted information.
 
 ```csharp
-// PaginatedQueryResult base class
-public class PaginatedQueryResult<TResult> : ListQueryResult<TResult>
+// QueryPaginatedResult base class
+public class QueryPaginatedResult<TResult> : QueryListResult<TResult>
 {
     public QueryPagination Pagination { get; set; } = new();
 }
 
 //you could also do this
-public class GetPeoplePaginatedQueryResult : PaginatedQueryResult<GetPeopleResult> { }
+public class GetPeopleQueryPaginatedResult : QueryPaginatedResult<GetPeopleResult> { }
 ```
 
 Pagination Handler example:
 
 ``` csharp
-public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQueryInput, GetPeoplePaginatedQueryResult>
+public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPaginatedInput, GetPeopleQueryPaginatedResult>
 {
     private readonly IPersonRepository _repository;
 
-    public GetPeoplePaginatedQueryHandler(IPersonRepository repository)
+    public GetPeopleQueryPaginatedHandler(IPersonRepository repository)
     {
         _repository = repository;
     }
 
-    public Task<GetPeoplePaginatedQueryResult> Handle(GetPeoplePaginatedQueryInput request, CancellationToken cancellationToken)
+    public Task<GetPeopleQueryPaginatedResult> Handle(GetPeopleQueryPaginatedInput request, CancellationToken cancellationToken)
     {
         var filteredData = GetFilteredPeople(request);
         
@@ -343,7 +343,7 @@ public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQu
                 Age = x.Age,
             }).ToList();
 
-        return Task.FromResult(new GetPeoplePaginatedQueryResult
+        return Task.FromResult(new GetPeopleQueryPaginatedResult
         {
             Result = paginatedResult,
             Pagination = new QueryPagination
@@ -355,7 +355,7 @@ public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQu
         });
     }
 
-    private IQueryable<Person> GetFilteredPeople(GetPeoplePaginatedQueryInput request)
+    private IQueryable<Person> GetFilteredPeople(GetPeopleQueryPaginatedInput request)
     {
         var filteredData = _repository.GetPeople();
 
@@ -452,9 +452,9 @@ public class PersonController : ControllerBase
     }
 
     [HttpGet("paginated", Name = "GetPeoplePaginated")]
-    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeoplePaginatedQueryInput paginatedQueryInput)
+    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeopleQueryPaginatedInput QueryPaginatedInput)
     {
-        var result = await _mediator.Send(paginatedQueryInput);
+        var result = await _mediator.Send(QueryPaginatedInput);
 
         return result.IsValid() 
             ? Ok(result)
@@ -494,9 +494,9 @@ public class PersonController : CqrsController
     }
 
     [HttpGet("paginated", Name = "GetPeoplePaginated")]
-    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeoplePaginatedQueryInput paginatedQueryInput)
+    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeopleQueryPaginatedInput QueryPaginatedInput)
     {
-        var result = await _mediator.Send(paginatedQueryInput);
+        var result = await _mediator.Send(QueryPaginatedInput);
 
         return HandleResult(result);
     }

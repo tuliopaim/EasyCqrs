@@ -35,9 +35,9 @@ public class PersonController : CqrsController
     }
 
     [HttpGet("paginated", Name = "GetPeoplePaginated")]
-    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeoplePaginatedQueryInput paginatedQueryInput)
+    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeopleQueryPaginatedInput queryPaginatedInput)
     {
-        var result = await _mediator.Send(paginatedQueryInput);
+        var result = await _mediator.Send(queryPaginatedInput);
 
         return HandleResult(result);
     }

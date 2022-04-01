@@ -4,16 +4,16 @@ using EasyCqrs.Sample.Repositories;
 
 namespace EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 
-public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQueryInput, GetPeoplePaginatedQueryResult>
+public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPaginatedInput, GetPeopleQueryPaginatedResult>
 {
     private readonly IPersonRepository _repository;
 
-    public GetPeoplePaginatedQueryHandler(IPersonRepository repository)
+    public GetPeopleQueryPaginatedHandler(IPersonRepository repository)
     {
         _repository = repository;
     }
 
-    public Task<GetPeoplePaginatedQueryResult> Handle(GetPeoplePaginatedQueryInput request, CancellationToken cancellationToken)
+    public Task<GetPeopleQueryPaginatedResult> Handle(GetPeopleQueryPaginatedInput request, CancellationToken cancellationToken)
     {
         var filteredData = GetFilteredPeople(request);
         
@@ -30,7 +30,7 @@ public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQu
                 Age = x.Age,
             }).ToList();
 
-        return Task.FromResult(new GetPeoplePaginatedQueryResult
+        return Task.FromResult(new GetPeopleQueryPaginatedResult
         {
             Result = paginatedResult,
             Pagination = new QueryPagination
@@ -42,7 +42,7 @@ public class GetPeoplePaginatedQueryHandler : IQueryHandler<GetPeoplePaginatedQu
         });
     }
 
-    private IQueryable<Person> GetFilteredPeople(GetPeoplePaginatedQueryInput request)
+    private IQueryable<Person> GetFilteredPeople(GetPeopleQueryPaginatedInput request)
     {
         var filteredData = _repository.GetPeople();
 
