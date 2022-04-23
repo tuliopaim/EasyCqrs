@@ -37,5 +37,5 @@ jobs:
 
       - name: Publish Nuget
         run: |
-          cd out
+          cd ${{ env.nuget-output-path-path }}
           dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ secrets.NUGET_SERVER }} --skip-duplicate
