@@ -7,11 +7,13 @@ on:
 jobs:
   build-pack-push:
     env:
-      project-path: ./src/EasyCqrs/EasyCqrs.csproj
+      src-path: ./src/
+      easycqrs-path: ./src/EasyCqrs/EasyCqrs.csproj
+      nuget-output-path: ./nuget-output
 
     runs-on: ubuntu-latest
 
-    steps:
+     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -21,19 +23,19 @@ jobs:
         with:
           dotnet-version: 6.0.x
       
-      - name: Restore dependencies
-        run: dotnet restore ${{ env.project-path }}
+      - name: Restore
+        run: dotnet restore ${{ env.src-path }}
 
-      - name: Build with dotnet
-        run: dotnet build ${{ env.project-path }} -c Release
-
+      - name: Build
+        run: dotnet build ${{ env.src-path }} -c Release 
+       
       - name: Test
-        run: dotnet test ${{ env.project-path }}    
+        run: dotnet test ${{ env.src-path }}   
 
-      - name: Create NuGet Package
-        run: dotnet pack ${{ env.project-path }} -c Release -o out
+      - name: Pack
+        run: dotnet pack ${{ env.easycqrs-path }} -c Release -o ${{ env.nuget-output-path-path }}
 
-      - name: Publish Nuget Package
+      - name: Publish Nuget
         run: |
           cd out
           dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ secrets.NUGET_SERVER }} --skip-duplicate
