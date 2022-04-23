@@ -36,7 +36,7 @@ public class ExceptionPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<
 
         var result = new TResponse();
 
-        result.AddError("Ocorreu um erro!");
+        result.AddError("An error has occurred!");
 
         return result;
     }
