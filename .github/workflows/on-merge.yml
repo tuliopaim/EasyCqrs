@@ -9,7 +9,6 @@ jobs:
     env:
       src-path: ./src/
       easycqrs-path: ./src/EasyCqrs/EasyCqrs.csproj
-      nuget-output-path: ./nuget-output
 
     runs-on: ubuntu-latest
 
@@ -33,9 +32,9 @@ jobs:
         run: dotnet test ${{ env.src-path }}   
 
       - name: Pack
-        run: dotnet pack ${{ env.easycqrs-path }} -c Release -o ${{ env.nuget-output-path }}
+        run: dotnet pack ${{ env.easycqrs-path }} -c Release -o output
 
       - name: Publish Nuget
         run: |
-          cd ${{ env.nuget-output-path-path }}
+          cd output
           dotnet nuget push *.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source ${{ secrets.NUGET_SERVER }} --skip-duplicate
