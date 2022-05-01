@@ -18,34 +18,30 @@ public class ExceptionPipelineIntegrationTests
     }
     
     [Fact]
-    public async void Must_Return_BadRequest_ErrorList_When_ExceptionThrown_Command()
+    public async void Must_Return_Status500_When_ExceptionThrown_Command()
     {
         //arrange
         var client = _fixtures.GetSampleApplication().CreateClient();
         var input = new ExceptionThrownCommandInput();
 
         //act
-        (var statusCode, var result) = await _fixtures.Post<ExceptionThrownCommandInput, CommandResult>
+        (var statusCode, _) = await _fixtures.Post<ExceptionThrownCommandInput, CommandResult>
             (client, "/ExceptionThrown", input);
 
         //assert
-        Assert.Equal(HttpStatusCode.BadRequest, statusCode);
-        Assert.NotNull(result);
-        Assert.NotEmpty(result!.Errors);
+        Assert.Equal(HttpStatusCode.InternalServerError, statusCode);
     }
 
     [Fact]
-    public async void Must_Return_BadRequest_ErrorList_When_ExceptionThrown_Query()
+    public async void Must_Return_Status500_When_ExceptionThrown_Query()
     {
         //arrange
         var client = _fixtures.GetSampleApplication().CreateClient();
 
         //act
-        (var statusCode, var result) = await _fixtures.Get<QueryResult<int>>(client, "/ExceptionThrown", new());
+        (var statusCode, _) = await _fixtures.Get<QueryResult<int>>(client, "/ExceptionThrown", new());
 
         //assert
-        Assert.Equal(HttpStatusCode.BadRequest, statusCode);
-        Assert.NotNull(result);
-        Assert.NotEmpty(result!.Errors);
+        Assert.Equal(HttpStatusCode.InternalServerError, statusCode);
     }
 }   

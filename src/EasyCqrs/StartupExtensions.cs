@@ -51,20 +51,10 @@ public static class StartupExtensions
         CqrsConfiguration cqrsConfiguration)
     {
         return services
-            .AddExceptionPipelineBehavior(cqrsConfiguration)
+            .AddScoped<INotifier, Notifier>()
+            .AddNotificationPipeline(cqrsConfiguration)
             .AddLogPipelineBehavior(cqrsConfiguration)
-            .AddValidationPipeline(cqrsConfiguration)
-            .AddNotificationPipeline(cqrsConfiguration);
-    }
-
-    private static IServiceCollection AddExceptionPipelineBehavior(this IServiceCollection services,
-        CqrsConfiguration cqrsConfiguration)
-    {
-        if (!cqrsConfiguration.WithExceptionPipeline) return services;
-
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ExceptionPipelineBehavior<,>));
-
-        return services;
+            .AddValidationPipeline(cqrsConfiguration);
     }
 
     private static IServiceCollection AddLogPipelineBehavior(this IServiceCollection services,
@@ -92,9 +82,7 @@ public static class StartupExtensions
     {
         if (!cqrsConfiguration.WithNotificationPipeline) return services;
 
-        services
-            .AddScoped<INotificator, Notificator>()
-            .AddScoped(typeof(IPipelineBehavior<,>), typeof(NotificationPipelineBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(NotificationPipelineBehavior<,>));
 
         return services;
     }

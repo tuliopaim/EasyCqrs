@@ -14,19 +14,19 @@ public class IntegrationTestsFixture
     {
         return new WebApplicationFactory<Program>();
     }
-    
+
     public NewPersonCommandInput GetInvalidCommandInput()
     {
         var invalidPersonCommand = new NewPersonCommandInput("Túlio Paim", 0);
         return invalidPersonCommand;
     }
-    
+
     public NewPersonCommandInput GetValidCommandInput()
     {
         var validPersonCommand = new NewPersonCommandInput("Túlio Paim", 24);
         return validPersonCommand;
     }
-    
+
     public GetPeopleQueryPaginatedInput GetInvalidQueryInput()
     {
         var invalidPersonCommand = new GetPeopleQueryPaginatedInput
@@ -41,44 +41,56 @@ public class IntegrationTestsFixture
     {
         var invalidPersonCommand = new GetPeopleQueryPaginatedInput
         {
-            PageNumber = 2,    
+            PageNumber = 2,
             PageSize = 50
         };
         return invalidPersonCommand;
     }
 
-    public async Task<(HttpStatusCode StatudCode, TCommandResult Result)> Post<TCommand, TCommandResult>(
+    public async Task<(HttpStatusCode StatusCode, TCommandResult? Result)> Post<TCommand, TCommandResult>(
         HttpClient httpClient,
         string endpoint,
-        TCommand command)
+        TCommand command) where TCommandResult : class
     {
         var json = JsonConvert.SerializeObject(command);
 
         var response = await httpClient.PostAsync(
             endpoint,
             new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
-                
+
+        if (response.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            return (HttpStatusCode.InternalServerError, null);
+        }
+
         var result = JsonConvert.DeserializeObject<TCommandResult>(
             await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
 
         return (response.StatusCode, result);
     }
 
-    public async Task<(HttpStatusCode StatudCode, TQueryResult Result)> Get<TQueryResult>(
+    public async Task<(HttpStatusCode StatusCode, TQueryResult? Result)> Get<TQueryResult>(
         HttpClient httpClient,
         string endpoint,
-        Dictionary<string, string?> queryParams)
+        Dictionary<string, string?> queryParams) where TQueryResult : class
     {
-        var uri = QueryHelpers.AddQueryString(endpoint, queryParams);
+        {
+            var uri = QueryHelpers.AddQueryString(endpoint, queryParams);
 
-        var response = await httpClient.GetAsync(uri);
+            var response = await httpClient.GetAsync(uri);
 
-        var result = JsonConvert.DeserializeObject<TQueryResult>(
-            await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
-        
-        return (response.StatusCode, result);
+            if (response.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                return (HttpStatusCode.InternalServerError, null);
+            }
+
+            var result = JsonConvert.DeserializeObject<TQueryResult>(
+                await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
+
+            return (response.StatusCode, result);
+        }
     }
-}   
+}
 
 
 [CollectionDefinition(nameof(IntegrationTestsFixture))]
