@@ -2,12 +2,12 @@ name: PR - Build and Test
 
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ master, develop ]
 
 jobs:
   build-pack-push:
     env:
-      project-path: ./src/EasyCqrs/EasyCqrs.csproj
+      src-path: ./src/
 
     runs-on: ubuntu-latest
 
@@ -21,11 +21,11 @@ jobs:
         with:
           dotnet-version: 6.0.x
       
-      - name: Restore dependencies
-        run: dotnet restore ${{ env.project-path }}
+      - name: Restore
+        run: dotnet restore ${{ env.src-path }}
 
-      - name: Build with dotnet
-        run: dotnet build ${{ env.project-path }} -c Release
-
+      - name: Build
+        run: dotnet build ${{ env.src-path }} -c Release 
+       
       - name: Test
-        run: dotnet test ${{ env.project-path }}      
+        run: dotnet test ${{ env.src-path }}    

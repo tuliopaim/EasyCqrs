@@ -17,7 +17,7 @@ public class CqrsConfiguration
     internal Assembly[] Assemblies { get; }
     internal bool WithLogPipeline { get; private set; } = true;
     internal bool WithValidationPipeline { get; private set; } = true;
-    internal bool WithExceptionPipeline { get; private set; } = true;
+    internal bool WithNotificationPipeline { get; private set; } = true;
     
     public void DisableLogPipeline()
     {
@@ -28,9 +28,9 @@ public class CqrsConfiguration
     {
         WithValidationPipeline = false;
     }
-    
-    public void DisableExceptionPipeline()
+
+    public void DisableNotificationPipeline()
     {
-        WithExceptionPipeline = false;
+        WithNotificationPipeline = false;
     }
 }

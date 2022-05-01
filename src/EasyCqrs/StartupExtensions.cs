@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using EasyCqrs.Notifications;
 using EasyCqrs.Pipelines;
 using FluentValidation;
 using MediatR;
@@ -28,28 +29,32 @@ public static class StartupExtensions
             throw new ArgumentNullException(nameof(assemblies));
         }
 
-        var configuration = new CqrsConfiguration(assemblies);
+        var cqrsConfiguration = new CqrsConfiguration(assemblies);
 
-        config?.Invoke(configuration);
-
-        services.AddScoped<IMediator, MediatR.Mediator>();
-        services.AddMediatR(configuration.Assemblies);
+        config?.Invoke(cqrsConfiguration);
 
         return services
-            .AddExceptionPipelineBehavior(configuration)
-            .AddLogPipelineBehavior(configuration)
-            .AddValidationPipeline(configuration)
-            .AddValidators(configuration);
+            .AddMediator(cqrsConfiguration)
+            .AddPipelines(cqrsConfiguration)
+            .AddValidators(cqrsConfiguration);
     }
-
-    private static IServiceCollection AddExceptionPipelineBehavior(this IServiceCollection services,
+    
+    private static IServiceCollection AddMediator(this IServiceCollection services,
         CqrsConfiguration cqrsConfiguration)
     {
-        if (!cqrsConfiguration.WithExceptionPipeline) return services;
+        return services
+            .AddScoped<IMediator, MediatR.Mediator>()
+            .AddMediatR(cqrsConfiguration.Assemblies);
+    }
 
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ExceptionPipelineBehavior<,>));
-
-        return services;
+    private static IServiceCollection AddPipelines(this IServiceCollection services,
+        CqrsConfiguration cqrsConfiguration)
+    {
+        return services
+            .AddScoped<INotifier, Notifier>()
+            .AddLogPipelineBehavior(cqrsConfiguration)
+            .AddValidationPipeline(cqrsConfiguration)
+            .AddNotificationPipeline(cqrsConfiguration);
     }
 
     private static IServiceCollection AddLogPipelineBehavior(this IServiceCollection services,
@@ -68,6 +73,16 @@ public static class StartupExtensions
         if (!cqrsConfiguration.WithValidationPipeline) return services;
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+
+        return services;
+    }
+
+    private static IServiceCollection AddNotificationPipeline(this IServiceCollection services,
+        CqrsConfiguration cqrsConfiguration)
+    {
+        if (!cqrsConfiguration.WithNotificationPipeline) return services;
+
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(NotificationPipelineBehavior<,>));
 
         return services;
     }
