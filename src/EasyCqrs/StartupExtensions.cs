@@ -52,9 +52,9 @@ public static class StartupExtensions
     {
         return services
             .AddScoped<INotifier, Notifier>()
-            .AddNotificationPipeline(cqrsConfiguration)
             .AddLogPipelineBehavior(cqrsConfiguration)
-            .AddValidationPipeline(cqrsConfiguration);
+            .AddValidationPipeline(cqrsConfiguration)
+            .AddNotificationPipeline(cqrsConfiguration);
     }
 
     private static IServiceCollection AddLogPipelineBehavior(this IServiceCollection services,
