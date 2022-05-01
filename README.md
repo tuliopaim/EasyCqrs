@@ -21,7 +21,7 @@ Install-Package TP.EasyCqrs
 * Auto injected INotifier
 * Auto injected Handlers
 * Log Pipeline Behavior
-    * Log's the input and when entering and leaving the handler
+    * Log's the input on entering, and the moment of leaving the handler
 * Validation Pipeline
     * Fail fast validation for the inputs before entering the handler
 * Notification Pipeline
@@ -56,12 +56,12 @@ builder.Services.AddCqrs(
         config.DisableNotificationPipeline();
     });
 ```
-The `ExceptionMiddleware` logs the exception and returns a 500 status code.
+The `ExceptionMiddleware` logs the all unhandled exceptions and returns a 500 status code.
 
 Usage:
 
 ``` csharp
-app.MapControllers();
+//....
 
 app.UseMiddleware<ExceptionMiddleware>();
 
@@ -77,11 +77,11 @@ You can use the injected `INotifier` interface to gather error messages across t
 ```csharp
 public class SomeService
 {
-    private readonly INotifier _notificator;
+    private readonly INotifier _notifier;
 
     public SomeService(INotifier notificator)
     {
-        _notificator = notificator;
+        _notifier = notificator;
     }
 
     public async Task SomeProcessingMethod()
@@ -90,7 +90,7 @@ public class SomeService
 
         if (SomethingIsWrong(foo, bar))
         {
-            _notificator.AddNotification("Something is wrong!");
+            _notifier.AddNotification("Something is wrong!");
             return;
         }
         
