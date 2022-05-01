@@ -1,7 +1,8 @@
 ﻿namespace EasyCqrs.Notifications;
 
-public interface INotificator
+public interface INotifier
 {
+    IEnumerable<string> GetErrorList();
     IReadOnlyList<Notification> Notifications { get; }
     bool IsValid { get; }
     void AddNotification(string notification);

@@ -1,6 +1,6 @@
 ﻿namespace EasyCqrs.Notifications;
 
-public class Notificator : INotificator
+public class Notifier : INotifier
 {
     private readonly List<Notification> _notifications = new();
 
@@ -20,5 +20,10 @@ public class Notificator : INotificator
         ArgumentNullException.ThrowIfNull(notifications);
         
         _notifications.AddRange(notifications.Select(x => new Notification(x)));
+    }
+
+    public IEnumerable<string> GetErrorList()
+    {
+        return Notifications.Select(x => x.Message);
     }
 }

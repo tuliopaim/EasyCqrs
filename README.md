@@ -18,16 +18,16 @@ Install-Package TP.EasyCqrs
 ---
 ## Features
 
-* Auto injected INotificator
+* Auto injected INotifier
 * Auto injected Handlers
-* Exception Pipeline
-    * No unhandled exceptions inside Handlers
-* Log Pipeline
-    * Logs entering and leaving handlers and the input serialized
+* Log Pipeline Behavior
+    * Log's the input on entering, and the moment of leaving the handler
 * Validation Pipeline
-    * Auto validate the inputs with the input validators before entering the handler
+    * Fail fast validation for the inputs before entering the handler
 * Notification Pipeline
-    * All the notifications will be added inside the result's Errors
+    * All the notifications will be added inside the result's `Errors` list
+* Exception Middleware
+    * Middleware ready to inject to log unhlanded exceptions
 
 Read more about 
 [Cqrs](https://martinfowler.com/bliki/CQRS.html), 
@@ -39,14 +39,12 @@ Read more about
 
 ### Registering
 
-You can use the AddCqrs extension method on IServiceCollection to inject and configure the required services in the DI container.
-
-You need to pass the Assemblies where the CQRS classes are located.
+You can use the `AddCqrs` extension method to inject and configure 
+the required services in the DI container, passing the Assemblies where the CQRS classes are located (inputs, results, validators and handlers).
 
 ``` csharp
 builder.Services.AddCqrs(typeof(NewPersonCommandHandler).Assembly);
 ``` 
-
 You can easly disable some of the pipeline behaviores with a configuration lambda:
 
 ```csharp
@@ -55,25 +53,35 @@ builder.Services.AddCqrs(
     config => {
         config.DisableLogPipeline();
         config.DisableValidationPipeline();
-        config.DisableExceptionPipeline();
         config.DisableNotificationPipeline();
     });
+```
+The `ExceptionMiddleware` logs the all unhandled exceptions and returns a 500 status code.
+
+Usage:
+
+``` csharp
+//....
+
+app.UseMiddleware<ExceptionMiddleware>();
+
+app.Run();
 ```
 
 ---
 
-## Notificator
+## Notifier
 
-You can use the injected `INotificator` interface to gather error messages across the scope:
+You can use the injected `INotifier` interface to gather error messages across the scope:
 
 ```csharp
 public class SomeService
 {
-    private readonly INotificator _notificator;
+    private readonly INotifier _notifier;
 
-    public SomeService(INotificator notificator)
+    public SomeService(INotifier notificator)
     {
-        _notificator = notificator;
+        _notifier = notificator;
     }
 
     public async Task SomeProcessingMethod()
@@ -82,7 +90,7 @@ public class SomeService
 
         if (SomethingIsWrong(foo, bar))
         {
-            _notificator.AddNotification("Something is wrong!");
+            _notifier.AddNotification("Something is wrong!");
             return;
         }
         
@@ -104,7 +112,7 @@ Each command scope are composed with:
 
 The `CommandResult` express what is returned from your `CommandHandler`, inherit from it if you want to return any extra information.
    
-> :warning: To validation and exception pipelines work properly your custom command result class **must** have a parameterless contructor, otherwise your handler will not compile.
+> :warning: To validation pipeline work properly your custom command result class **must** have a parameterless contructor, otherwise your handler will not compile.
 :warning:
 
 ```csharp
@@ -162,7 +170,7 @@ Your CommandHandler must inherit from `ICommandHandler<TCommandInput, TCommandRe
 
 You must implement the abstract `Handle` method, this is the method that MediatR will call when you send a CommandInput
 
-If you dont disabled the pipelines at startup, MediatR will make sure that your CommandInput will be logged and validated and every unhandled exception inside the `Handle` scope will be treated.
+If you dont disabled the pipelines at startup, MediatR will make sure that your CommandInput will be logged and validated before entering the handler.
 
 ``` csharp
 public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, NewPersonCommandResult>

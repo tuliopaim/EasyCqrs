@@ -31,7 +31,6 @@ public class ValidationPipelineIntegrationTests
         Assert.Equal(HttpStatusCode.BadRequest, statusCode);
         Assert.NotNull(result);
         Assert.NotEmpty(result!.Errors);
-        Assert.Equal(Guid.Empty, result.Id);
     }
 
     [Fact]
@@ -49,7 +48,6 @@ public class ValidationPipelineIntegrationTests
         Assert.Equal(HttpStatusCode.OK, statusCode);
         Assert.NotNull(result);
         Assert.Empty(result!.Errors);
-        Assert.NotEqual(Guid.Empty, result.Id);
     }
         
     [Fact]
