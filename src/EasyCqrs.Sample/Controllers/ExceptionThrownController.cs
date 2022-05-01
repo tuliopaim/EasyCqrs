@@ -1,6 +1,6 @@
 ﻿using EasyCqrs.Mvc;
-using EasyCqrs.Sample.Application.Commands.ExceptionThrownCommand;
-using EasyCqrs.Sample.Application.Queries.ExceptionThrownQuery;
+using EasyCqrs.Sample.Application.Commands.DivideByZeroCommand;
+using EasyCqrs.Sample.Application.Queries.DivideByZeroQuery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +8,11 @@ namespace EasyCqrs.Sample.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class ExceptionThrownController : CqrsController
+public class DivideByZeroController : CqrsController
 {
     private readonly IMediator _mediator;
 
-    public ExceptionThrownController(IMediator mediator)
+    public DivideByZeroController(IMediator mediator)
     {
         _mediator = mediator;
     }
@@ -20,7 +20,7 @@ public class ExceptionThrownController : CqrsController
     [HttpPost(Name = nameof(PostThrowException))]
     public async Task<IActionResult> PostThrowException ()
     {
-        var result = await _mediator.Send(new ExceptionThrownCommandInput());
+        var result = await _mediator.Send(new DivideByZeroCommandInput());
 
         return HandleResult(result);
     }
@@ -28,7 +28,7 @@ public class ExceptionThrownController : CqrsController
     [HttpGet(Name = nameof(GetThrowException))]
     public async Task<IActionResult> GetThrowException()
     {
-        var result = await _mediator.Send(new ExceptionThrownQueryInput());
+        var result = await _mediator.Send(new DivideByZeroQueryInput());
 
         return HandleResult(result);
     }

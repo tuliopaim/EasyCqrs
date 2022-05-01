@@ -1,11 +1,11 @@
 ﻿using EasyCqrs.Commands;
 
-namespace EasyCqrs.Sample.Application.Commands.ExceptionThrownCommand;
+namespace EasyCqrs.Sample.Application.Commands.DivideByZeroCommand;
 
-public class ExceptionThrownCommandHandler : ICommandHandler<ExceptionThrownCommandInput, CommandResult>
+public class DivideByZeroCommandHandler : ICommandHandler<DivideByZeroCommandInput, CommandResult>
 {
     public Task<CommandResult> Handle(
-        ExceptionThrownCommandInput request, 
+        DivideByZeroCommandInput request,
         CancellationToken cancellationToken)
     {
         var divisor = 0;
