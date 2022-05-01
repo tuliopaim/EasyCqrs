@@ -4,6 +4,7 @@ public class Notification
 {
     public Notification(string message)
     {
+        ArgumentNullException.ThrowIfNull(message);
         Message = message;
     }
 
