@@ -12,6 +12,12 @@ public class NewPersonCommandInputValidator : CommandInputValidator<NewPersonCom
             .NotEmpty()
             .MinimumLength(2)
             .MaximumLength(150);
+        
+        RuleFor(x => x.Email)
+            .Cascade(CascadeMode.Stop)
+            .NotEmpty()
+            .EmailAddress()
+            .MaximumLength(150);
 
         RuleFor(x => x.Age)
             .GreaterThanOrEqualTo(18);
