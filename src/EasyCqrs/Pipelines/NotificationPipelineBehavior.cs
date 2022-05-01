@@ -8,20 +8,20 @@ public class NotificationPipelineBehavior<TRequest, TResponse> : IPipelineBehavi
     where TRequest : IMediatorInput<TResponse>
     where TResponse : IMediatorResult
 {
-    private readonly INotificator _notificator;
+    private readonly INotifier _notifier;
 
-    public NotificationPipelineBehavior(INotificator notificator)
+    public NotificationPipelineBehavior(INotifier notifier)
     {
-        _notificator = notificator;
+        _notifier = notifier;
     }
 
     public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
     {
         var response = await next();
 
-        if (_notificator.IsValid) return response;
+        if (_notifier.IsValid) return response;
 
-        foreach (var notification in _notificator.Notifications)
+        foreach (var notification in _notifier.Notifications)
         {
             if (response.Errors.Contains(notification.Message)) continue;
             response.AddError(notification.Message);

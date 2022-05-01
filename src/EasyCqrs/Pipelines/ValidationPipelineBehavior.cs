@@ -1,4 +1,5 @@
 ﻿using EasyCqrs.Mediator;
+using EasyCqrs.Notifications;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
