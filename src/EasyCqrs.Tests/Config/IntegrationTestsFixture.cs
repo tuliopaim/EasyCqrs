@@ -17,13 +17,13 @@ public class IntegrationTestsFixture
 
     public NewPersonCommandInput GetInvalidCommandInput()
     {
-        var invalidPersonCommand = new NewPersonCommandInput("Túlio Paim", 0);
+        var invalidPersonCommand = new NewPersonCommandInput("Túlio Paim", "tulio@email.com", 0);
         return invalidPersonCommand;
     }
 
     public NewPersonCommandInput GetValidCommandInput()
     {
-        var validPersonCommand = new NewPersonCommandInput("Túlio Paim", 24);
+        var validPersonCommand = new NewPersonCommandInput("Túlio Paim", "tulio@email.com", 24);
         return validPersonCommand;
     }
 
