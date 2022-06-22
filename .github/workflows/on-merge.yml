@@ -2,7 +2,7 @@ name: Merge - Pack and Push
 
 on:
   push:
-    branches: [ master ]
+    branches: [ deploy ]
 
 jobs:
   build-pack-push:
