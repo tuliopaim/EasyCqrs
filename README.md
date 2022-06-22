@@ -204,9 +204,9 @@ public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, Ne
 
 Each query must retriave a result. Period. EasyCqrs provides the base classes needed to retrieve:
 
-* A single object: `QueryResult<TResult>`
-* A list of objects: `QueryListResult<TResult>` 
-* A paginated list of objects: `QueryPaginatedResult<TResult>` 
+* A single object: `QueryResult<TItem>`
+* A list of objects: `QueryLisTItem<TItem>` 
+* A paginated list of objects: `QueryPaginatedResult<TItem>` 
 
 The inputs must inherit from `QueryInput<TQueryResult>` or `QueryPaginatedInput<TQueryResult>`, and can carry filters or any information required to return the result(s). 
 
@@ -219,14 +219,14 @@ The queries scope works like the Command's scope:
 
 ### QueryResult
 
-You can either create a SpecificQueryResult inheriting from `QueryResult<TResult>` class or use it directly, in this example i will use 
+You can either create a SpecificQueryResult inheriting from `QueryResult<TItem>` class or use it directly, in this example i will use 
 `QueryResult<GetPersonByIdResult>` Directly
 
 ``` csharp
 // QueryResult base class
-public class QueryResult<TResult> : QueryResult
+public class QueryResult<TItem> : QueryResult
 {
-    public TResult? Result { get; set; }
+    public TItem? Result { get; set; }
 }
 
 // you could also do this
@@ -272,18 +272,18 @@ public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQueryInput, 
 }
 ```
 
-### QueryListResult
+### QueryLisTItem
 
-The `QueryListResult<TQueryResult>` helper class has a `IEnumerable<TResult>` as Result, and can be used if you need to retreive a list of objects:
+The `QueryLisTItem<TQueryResult>` helper class has a `IEnumerable<TItem>` as Result, and can be used if you need to retreive a list of objects:
 
 ```csharp
-// QueryListResult base class
-public class QueryListResult<TResult> : QueryResult<IEnumerable<TResult>>
+// QueryLisTItem base class
+public class QueryLisTItem<TItem> : QueryResult<IEnumerable<TItem>>
 {
 }
 
 // you could also do this
-public class FooQueryResult : QueryListResult<TResult> { }
+public class FooQueryResult : QueryLisTItem<TItem> { }
 ```
 
 
@@ -309,11 +309,11 @@ public class GetPeopleQueryPaginatedInputValidator : QueryInputValidator<GetPeop
 ```
 ### QueryPaginatedResult
 
-The `QueryPaginatedResult<TResult>` inherit from `QueryListResult<TResult>`, witch means that it has a `IEnumerable<TResult>` as Result, but also a `QueryPagination` property, with pagination realted information.
+The `QueryPaginatedResult<TItem>` inherit from `QueryLisTItem<TItem>`, witch means that it has a `IEnumerable<TItem>` as Result, but also a `QueryPagination` property, with pagination realted information.
 
 ```csharp
 // QueryPaginatedResult base class
-public class QueryPaginatedResult<TResult> : QueryListResult<TResult>
+public class QueryPaginatedResult<TItem> : QueryLisTItem<TItem>
 {
     public QueryPagination Pagination { get; set; } = new();
 }
