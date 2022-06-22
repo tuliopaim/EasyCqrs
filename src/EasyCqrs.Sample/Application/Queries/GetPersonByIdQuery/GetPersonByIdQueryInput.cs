@@ -2,7 +2,7 @@
 
 namespace EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
 
-public class GetPersonByIdQueryInput : QueryInput<QueryResult<GetPersonByIdResult>>
+public class GetPersonByIdQueryInput : QueryInput<QueryResult<GetPersonByIdItem>>
 {
     public GetPersonByIdQueryInput(Guid id)
     {

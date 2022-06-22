@@ -23,7 +23,7 @@ public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPagina
             .OrderBy(x => x.Name)
             .Skip(request.PageNumber * request.PageSize)
             .Take(request.PageSize)
-            .Select(x => new GetPeopleResult
+            .Select(x => new GetPeopleQueryPaginatedItem
             {
                 Id = x.Id,
                 Name = x.Name,

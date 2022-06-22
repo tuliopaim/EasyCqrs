@@ -1,6 +1,6 @@
 ﻿namespace EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 
-public class GetPeopleResult
+public class GetPeopleQueryPaginatedItem
 {
     public Guid Id { get; set; }
     public string? Name { get; set; }
