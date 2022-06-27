@@ -23,6 +23,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\EasyCqrs.Sample\EasyCqrs.Sample.csproj" />
+	  <ProjectReference Include="..\EasyCqrs\EasyCqrs.csproj" />
 	</ItemGroup>
 
 </Project>
