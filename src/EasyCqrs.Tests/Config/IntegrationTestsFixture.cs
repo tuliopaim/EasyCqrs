@@ -69,10 +69,10 @@ public class IntegrationTestsFixture
         return (response.StatusCode, result);
     }
 
-    public async Task<(HttpStatusCode StatusCode, TQueryResult? Result)> Get<TQueryResult>(
+    public async Task<(HttpStatusCode StatusCode, TItem? Result)> Get<TItem>(
         HttpClient httpClient,
         string endpoint,
-        Dictionary<string, string?> queryParams) where TQueryResult : class
+        Dictionary<string, string?> queryParams) where TItem : class
     {
         {
             var uri = QueryHelpers.AddQueryString(endpoint, queryParams);
@@ -84,7 +84,7 @@ public class IntegrationTestsFixture
                 return (HttpStatusCode.InternalServerError, null);
             }
 
-            var result = JsonConvert.DeserializeObject<TQueryResult>(
+            var result = JsonConvert.DeserializeObject<TItem>(
                 await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
 
             return (response.StatusCode, result);

@@ -1,5 +1,5 @@
 namespace EasyCqrs.Queries;
 
-public class QueryListResult<TResult> : QueryResult<IEnumerable<TResult>>
+public class QueryListResult<TItem> : QueryResult<IEnumerable<TItem>>
 {
 }   

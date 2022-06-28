@@ -2,6 +2,7 @@
 
 namespace EasyCqrs.Queries;
 
-public class QueryInput<TQueryResult> : MediatorInput<TQueryResult> where TQueryResult : QueryResult
+public class QueryInput<TItem> : MediatorInput<TItem> 
+    where TItem : QueryResult
 {
 }

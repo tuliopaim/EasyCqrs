@@ -2,4 +2,4 @@
 
 namespace EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 
-public class GetPeopleQueryPaginatedResult : QueryPaginatedResult<GetPeopleResult> { }
+public class GetPeopleQueryPaginatedResult : QueryPaginatedResult<GetPeopleQueryPaginatedItem> { }

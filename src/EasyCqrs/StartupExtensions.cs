@@ -52,9 +52,20 @@ public static class StartupExtensions
     {
         return services
             .AddScoped<INotifier, Notifier>()
+            .AddExceptionPipeline(cqrsConfiguration)
             .AddLogPipelineBehavior(cqrsConfiguration)
             .AddValidationPipeline(cqrsConfiguration)
             .AddNotificationPipeline(cqrsConfiguration);
+    }
+
+    private static IServiceCollection AddExceptionPipeline(this IServiceCollection services,
+        CqrsConfiguration cqrsConfiguration)
+    {
+        if (!cqrsConfiguration.WithExceptionPipeline) return services;
+
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ExceptionPipelineBehavior<,>));
+          
+        return services;
     }
 
     private static IServiceCollection AddLogPipelineBehavior(this IServiceCollection services,

@@ -2,9 +2,14 @@
 
 namespace EasyCqrs.Queries;
 
-public class QueryResult<TResult> : QueryResult
+public class QueryResult<TItem> : QueryResult
 {
-    public TResult? Result { get; set; }
+    public TItem? Result { get; set; }
+
+    public static implicit operator QueryResult<TItem>(TItem? result)
+    {
+        return new() { Result = result };
+    }
 }
 
 public abstract class QueryResult : MediatorResult

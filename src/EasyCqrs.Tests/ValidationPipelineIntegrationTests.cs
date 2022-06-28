@@ -24,7 +24,7 @@ public class ValidationPipelineIntegrationTests
         var invalidPersonCommand = _fixtures.GetInvalidCommandInput();
 
         //act
-        (var statusCode, var result) = await _fixtures.Post<NewPersonCommandInput, NewPersonCommandResult>(
+        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, NewPersonCommandResult>(
             client, "/Person", invalidPersonCommand);
 
         //assert
@@ -41,7 +41,7 @@ public class ValidationPipelineIntegrationTests
         var validPersonCommand = _fixtures.GetValidCommandInput();
 
         //act
-        (var statusCode, var result) = await _fixtures.Post<NewPersonCommandInput, NewPersonCommandResult>(
+        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, NewPersonCommandResult>(
             client, "/Person", validPersonCommand);
 
         //assert
@@ -59,7 +59,7 @@ public class ValidationPipelineIntegrationTests
         var queryParams = GetPeopleQueryPaginatedParams(getPeopleQueryInput);
 
         //act
-        (var statusCode, var result) = await _fixtures.Get<GetPeopleQueryPaginatedResult>(
+        var (statusCode, result) = await _fixtures.Get<GetPeopleQueryPaginatedResult>(
             client, "/Person/paginated", queryParams);
 
         //assert
@@ -77,7 +77,7 @@ public class ValidationPipelineIntegrationTests
         var queryParams = GetPeopleQueryPaginatedParams(getPeopleQueryInput);
 
         //act
-        (var statusCode, var result) = await _fixtures.Get<GetPeopleQueryPaginatedResult>(
+        var (statusCode, result) = await _fixtures.Get<GetPeopleQueryPaginatedResult>(
             client, "/Person/paginated", queryParams);
 
         //assert

@@ -25,7 +25,7 @@ public class ExceptionMiddlewareIntegrationTests
         var input = new DivideByZeroCommandInput();
 
         //act
-        (var statusCode, _) = await _fixtures.Post<DivideByZeroCommandInput, CommandResult>
+        var (statusCode, _) = await _fixtures.Post<DivideByZeroCommandInput, CommandResult>
             (client, "/DivideByZero", input);
 
         //assert
@@ -39,7 +39,7 @@ public class ExceptionMiddlewareIntegrationTests
         var client = _fixtures.GetSampleApplication().CreateClient();
 
         //act
-        (var statusCode, _) = await _fixtures.Get<QueryResult<int>>(client, "/DivideByZero", new());
+        var (statusCode, _) = await _fixtures.Get<QueryResult<int>>(client, "/DivideByZero", new Dictionary<string, string?>());
 
         //assert
         Assert.Equal(HttpStatusCode.InternalServerError, statusCode);

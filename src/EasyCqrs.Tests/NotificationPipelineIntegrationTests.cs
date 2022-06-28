@@ -1,7 +1,5 @@
 ﻿using EasyCqrs.Commands;
-using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 using EasyCqrs.Sample.Application.Commands.NotificationCommand;
-using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 using EasyCqrs.Tests.Config;
 using System.Net;
 using Xunit;
@@ -27,7 +25,7 @@ public class NotificationPipelineIntegrationTests
         var notificationInput = new NotificationCommandInput(NotificationMessage);
 
         //act
-        (var statusCode, var result) = await _fixtures.Post<NotificationCommandInput, CommandResult>(
+        var (statusCode, result) = await _fixtures.Post<NotificationCommandInput, CommandResult>(
             client, "/Notification", notificationInput);
 
         //assert

@@ -5,6 +5,7 @@ namespace EasyCqrs.Sample.Repositories;
 public interface IPersonRepository
 {
     IQueryable<Person> GetPeople();
+    IEnumerable<Person> GetPeopleByAge(int age);
     void AddPerson(Person person);
 }
 
@@ -17,6 +18,11 @@ public class PersonRepository : IPersonRepository
         return Persons.AsQueryable();
     }
 
+    public IEnumerable<Person> GetPeopleByAge(int age)
+    {
+        return Persons.Where(x => x.Age == age);
+    }
+    
     public void AddPerson(Person person)
     {
         Persons.Add(person);

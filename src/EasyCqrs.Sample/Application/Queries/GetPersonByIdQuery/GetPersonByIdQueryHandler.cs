@@ -3,7 +3,7 @@ using EasyCqrs.Sample.Repositories;
 
 namespace EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
 
-public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQueryInput, QueryResult<GetPersonByIdResult>>
+public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQueryInput, QueryResult<GetPersonByIdItem>>
 {
     private readonly IPersonRepository _personRepository;
 
@@ -11,15 +11,15 @@ public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQueryInput, 
     {
         _personRepository = personRepository;
     }
-    public Task<QueryResult<GetPersonByIdResult>> Handle(GetPersonByIdQueryInput request, CancellationToken cancellationToken)
+    
+    public async Task<QueryResult<GetPersonByIdItem>> Handle(GetPersonByIdQueryInput request, CancellationToken cancellationToken)
     {
         var person = _personRepository.GetPeople().FirstOrDefault(x => x.Id == request.Id);
         
-        var personResult = GetPersonByIdResult.FromPerson(person);
+        var personResult = person is null
+            ? null
+            : new GetPersonByIdItem(person.Id, person.Name, person.Age);
 
-        return Task.FromResult(new QueryResult<GetPersonByIdResult>
-        {
-            Result = personResult
-        });
+        return personResult;
     }
 }
