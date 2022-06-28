@@ -1,4 +1,6 @@
-﻿namespace EasyCqrs.Mediator;
+﻿using Newtonsoft.Json;
+
+namespace EasyCqrs.Mediator;
 
 public class MediatorResult : IMediatorResult
 {
@@ -11,7 +13,15 @@ public class MediatorResult : IMediatorResult
         _errors.Add(error);
     }
 
-    public bool IsValid => _errors.Count == 0;
+    public void AddError(Exception ex, string error)
+    {
+        Exception = ex;
+        AddError(error);
+    }
+
+    [JsonIgnore]
+    public Exception? Exception { get; private set; }
 
     public IReadOnlyList<string> Errors => _errors;
+    public bool IsValid => _errors.Count == 0;
 }
