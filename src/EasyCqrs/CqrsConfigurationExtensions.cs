@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EasyCqrs;
 
-public static class StartupExtensions
+public static class CqrsConfigurationExtensions
 {
     public static IServiceCollection AddCqrs(
         this IServiceCollection services,
@@ -35,16 +35,25 @@ public static class StartupExtensions
 
         return services
             .AddMediator(cqrsConfiguration)
-            .AddPipelines(cqrsConfiguration)
-            .AddValidators(cqrsConfiguration);
+            .AddValidators(cqrsConfiguration)
+            .AddPipelines(cqrsConfiguration);
     }
     
     private static IServiceCollection AddMediator(this IServiceCollection services,
         CqrsConfiguration cqrsConfiguration)
     {
-        return services
-            .AddScoped<IMediator, MediatR.Mediator>()
-            .AddMediatR(cqrsConfiguration.Assemblies);
+        return services.AddMediatR(cqrsConfiguration.Assemblies, config =>
+        {
+            config.AsScoped();
+        });
+    }
+
+    private static IServiceCollection AddValidators(this IServiceCollection services,
+        CqrsConfiguration cqrsConfiguration)
+    {
+        services.AddValidatorsFromAssemblies(cqrsConfiguration.Assemblies);
+
+        return services;
     }
 
     private static IServiceCollection AddPipelines(this IServiceCollection services,
@@ -94,17 +103,6 @@ public static class StartupExtensions
         if (!cqrsConfiguration.WithNotificationPipeline) return services;
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(NotificationPipelineBehavior<,>));
-
-        return services;
-    }
-
-    private static IServiceCollection AddValidators(this IServiceCollection services,
-        CqrsConfiguration cqrsConfiguration)
-    {
-        foreach (var assemblyScanResult in AssemblyScanner.FindValidatorsInAssemblies(cqrsConfiguration.Assemblies))
-        {
-            services.AddScoped(assemblyScanResult.InterfaceType, assemblyScanResult.ValidatorType);
-        }
 
         return services;
     }
