@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>command</Title>
+			<Shortcut>command</Shortcut>
+			<Description>Code for Command default structure</Description>
+			<Author>Túlio Paim</Author>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>commandname</ID>
+					<ToolTip>CommandName</ToolTip>
+					<Default>SomeCommand</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp">
+				<![CDATA[public class $commandname$CommandInput : $selected$ICommandInput$end$<CommandResult>
+{
+
+}
+
+public class $commandname$CommandInputValidator : CommandInputValidator<$commandname$CommandInput>
+{
+    public $commandname$CommandInputValidator()
+    {
+
+    }
+}
+
+public class $commandname$CommandHandler : ICommandHandler<$commandname$CommandInput, CommandResult>
+{
+	public Task<CommandResult> Handle($commandname$CommandInput request, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+}
+]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>
