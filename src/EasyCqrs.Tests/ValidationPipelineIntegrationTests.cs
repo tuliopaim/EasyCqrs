@@ -8,12 +8,12 @@ using EasyCqrs.Queries;
 
 namespace EasyCqrs.Tests;
 
-[Collection(nameof(IntegrationTestsFixture))]
+[Collection(nameof(ValidationPipelineTestsFixture))]
 public class ValidationPipelineIntegrationTests
 {
-    private readonly IntegrationTestsFixture _fixtures;
+    private readonly ValidationPipelineTestsFixture _fixtures;
 
-    public ValidationPipelineIntegrationTests(IntegrationTestsFixture fixtures)
+    public ValidationPipelineIntegrationTests(ValidationPipelineTestsFixture fixtures)
     {
         _fixtures = fixtures;
     }
@@ -89,7 +89,7 @@ public class ValidationPipelineIntegrationTests
         Assert.Empty(result!.Errors);
     }
 
-    public Dictionary<string, string?> GetPeopleQueryPaginatedParams(GetPeopleQueryPaginatedInput query)
+    private Dictionary<string, string?> GetPeopleQueryPaginatedParams(GetPeopleQueryPaginatedInput query)
     {
         return new Dictionary<string, string?>
         {
