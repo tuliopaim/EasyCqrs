@@ -1,6 +1,5 @@
 ﻿using EasyCqrs.Commands;
 using EasyCqrs.Notifications;
-using EasyCqrs.Sample.Application.Commands.Common;
 
 namespace EasyCqrs.Sample.Application.Commands.NotificationCommand;
 

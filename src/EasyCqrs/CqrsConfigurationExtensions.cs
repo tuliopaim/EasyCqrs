@@ -34,6 +34,7 @@ public static class CqrsConfigurationExtensions
         config?.Invoke(cqrsConfiguration);
 
         return services
+            .AddScoped<INotifier, Notifier>()
             .AddMediator(cqrsConfiguration)
             .AddValidators(cqrsConfiguration)
             .AddPipelines(cqrsConfiguration);
@@ -60,7 +61,6 @@ public static class CqrsConfigurationExtensions
         CqrsConfiguration cqrsConfiguration)
     {
         return services
-            .AddScoped<INotifier, Notifier>()
             .AddLogPipelineBehavior(cqrsConfiguration)
             .AddValidationPipeline(cqrsConfiguration);
     }

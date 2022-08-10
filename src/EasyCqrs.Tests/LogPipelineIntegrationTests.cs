@@ -1,5 +1,5 @@
-﻿using EasyCqrs.Pipelines;
-using EasyCqrs.Sample.Application.Commands.Common;
+﻿using EasyCqrs.Commands;
+using EasyCqrs.Pipelines;
 using EasyCqrs.Sample.Application.Commands.NotificationCommand;
 using EasyCqrs.Tests.Config;
 using EasyCqrs.Tests.Models;
