@@ -2,6 +2,6 @@
 
 namespace EasyCqrs.Events;
 
-public class EventInput : INotification
+public interface IEventInput : INotification
 {
 }
