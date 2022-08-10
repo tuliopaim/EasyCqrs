@@ -1,5 +1,4 @@
-﻿using EasyCqrs.Commands;
-using EasyCqrs.Sample.Application.Commands.NotificationCommand;
+﻿using EasyCqrs.Sample.Application.Commands.NotificationCommand;
 using EasyCqrs.Tests.Config;
 using System.Net;
 using EasyCqrs.Sample.Application.Commands.Common;

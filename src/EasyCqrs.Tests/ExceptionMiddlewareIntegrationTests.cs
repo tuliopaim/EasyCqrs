@@ -1,5 +1,4 @@
-﻿using EasyCqrs.Commands;
-using EasyCqrs.Queries;
+﻿using EasyCqrs.Queries;
 using EasyCqrs.Sample.Application.Commands.DivideByZeroCommand;
 using EasyCqrs.Tests.Config;
 using System.Net;

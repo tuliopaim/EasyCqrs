@@ -5,7 +5,6 @@ using System.Net;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 using EasyCqrs.Tests.Models;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit;
 
 namespace EasyCqrs.Tests.Config;

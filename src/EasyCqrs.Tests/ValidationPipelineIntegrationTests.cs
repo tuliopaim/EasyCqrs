@@ -2,7 +2,6 @@
 using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 using EasyCqrs.Tests.Config;
 using System.Net;
-using EasyCqrs.Commands;
 using EasyCqrs.Sample.Application.Commands.Common;
 using Xunit;
 using EasyCqrs.Queries;

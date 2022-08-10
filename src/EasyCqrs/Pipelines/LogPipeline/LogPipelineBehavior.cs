@@ -1,6 +1,5 @@
 ﻿using EasyCqrs.Mediator;
 using MediatR;
-using Newtonsoft.Json;
 
 namespace EasyCqrs.Pipelines;
 
