@@ -21,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Snippets", "Snippets", "{E627A6DB-3AD8-46EF-8602-DBF74C648884}"
 	ProjectSection(SolutionItems) = preProject
 		snippets\command.snippet = snippets\command.snippet
+		snippets\query.snippet = snippets\query.snippet
 		snippets\querylist.snippet = snippets\querylist.snippet
 		snippets\querypaginated.snippet = snippets\querypaginated.snippet
 	EndProjectSection

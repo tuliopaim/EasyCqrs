@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>queryitem</Title>
+			<Shortcut>queryitem</Shortcut>
+			<Description>Code for Query default structure</Description>
+			<Author>Túlio Paim</Author>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>query</ID>
+					<ToolTip>Query Name</ToolTip>
+					<Default>SomeQuery</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp">
+				<![CDATA[public class $query$QueryInput 
+    : $selected$IQueryInput$end$<QueryResult<$query$Item>>
+{
+    
+}
+
+public class $query$Item
+{
+    $selected$ $end$
+}
+
+public class $query$QueryHandler : IQueryHandler<$query$QueryInput, QueryResult<$query$Item>>
+{
+    public $query$QueryHandler()
+    {
+
+    }
+
+    public async Task<QueryResult<$query$Item>> Handle($query$QueryInput request, CancellationToken cancellationToken)
+    {
+        
+    }
+}
+]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

@@ -31,6 +31,17 @@ public class $commandname$CommandInputValidator : CommandInputValidator<$command
 
 public class $commandname$CommandHandler : ICommandHandler<$commandname$CommandInput, CommandResult>
 {
+	private readonly ILogger<$commandname$CommandHandler> _logger;
+    private readonly INotifier _notifier;
+
+	public $commandname$CommandHandler(
+		ILogger<$commandname$CommandHandler> logger,
+		INotifier notifier)
+	{
+		_logger = logger;
+		_notifier = notifier;
+	}
+
 	public Task<CommandResult> Handle($commandname$CommandInput request, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
