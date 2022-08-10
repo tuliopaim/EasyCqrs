@@ -2,6 +2,7 @@
 using EasyCqrs.Sample.Application.Commands.NotificationCommand;
 using EasyCqrs.Tests.Config;
 using System.Net;
+using EasyCqrs.Sample.Application.Commands.Common;
 using Xunit;
 
 namespace EasyCqrs.Tests;
@@ -21,8 +22,8 @@ public class NotificationPipelineIntegrationTests
     {
         //arrange
         var client = _fixtures.GetSampleApplication().CreateClient();
-        const string NotificationMessage = "New notification!";
-        var notificationInput = new NotificationCommandInput(NotificationMessage);
+        const string notificationMessage = "New notification!";
+        var notificationInput = new NotificationCommandInput(notificationMessage);
 
         //act
         var (statusCode, result) = await _fixtures.Post<NotificationCommandInput, CommandResult>(
@@ -32,6 +33,6 @@ public class NotificationPipelineIntegrationTests
         Assert.Equal(HttpStatusCode.BadRequest, statusCode);
         Assert.NotNull(result);
         Assert.NotEmpty(result!.Errors);
-        Assert.Equal(NotificationMessage, result!.Errors.First());
+        Assert.Equal(notificationMessage, result!.Errors.First());
     }
 }

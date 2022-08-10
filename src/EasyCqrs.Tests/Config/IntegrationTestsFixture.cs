@@ -1,9 +1,11 @@
-﻿using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
-using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System.Net;
+using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
+using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
+using EasyCqrs.Tests.Models;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Xunit;
 
 namespace EasyCqrs.Tests.Config;
@@ -47,7 +49,7 @@ public class IntegrationTestsFixture
         return invalidPersonCommand;
     }
 
-    public async Task<(HttpStatusCode StatusCode, TCommandResult? Result)> Post<TCommand, TCommandResult>(
+    public async Task<(HttpStatusCode StatusCode, ApiResponse<TCommandResult?>? Result)> Post<TCommand, TCommandResult>(
         HttpClient httpClient,
         string endpoint,
         TCommand command) where TCommandResult : class
@@ -63,13 +65,13 @@ public class IntegrationTestsFixture
             return (HttpStatusCode.InternalServerError, null);
         }
 
-        var result = JsonConvert.DeserializeObject<TCommandResult>(
+        var result = JsonConvert.DeserializeObject<ApiResponse<TCommandResult?>>(
             await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
 
         return (response.StatusCode, result);
     }
 
-    public async Task<(HttpStatusCode StatusCode, TItem? Result)> Get<TItem>(
+    public async Task<(HttpStatusCode StatusCode, ApiResponse<TItem?>? Result)> Get<TItem>(
         HttpClient httpClient,
         string endpoint,
         Dictionary<string, string?> queryParams) where TItem : class
@@ -84,7 +86,7 @@ public class IntegrationTestsFixture
                 return (HttpStatusCode.InternalServerError, null);
             }
 
-            var result = JsonConvert.DeserializeObject<TItem>(
+            var result = JsonConvert.DeserializeObject<ApiResponse<TItem?>>(
                 await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
 
             return (response.StatusCode, result);

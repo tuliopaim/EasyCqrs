@@ -2,6 +2,8 @@
 using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 using EasyCqrs.Tests.Config;
 using System.Net;
+using EasyCqrs.Commands;
+using EasyCqrs.Sample.Application.Commands.Common;
 using Xunit;
 
 namespace EasyCqrs.Tests;
@@ -24,7 +26,7 @@ public class ValidationPipelineIntegrationTests
         var invalidPersonCommand = _fixtures.GetInvalidCommandInput();
 
         //act
-        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, NewPersonCommandResult>(
+        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, CreatedCommandResult>(
             client, "/Person", invalidPersonCommand);
 
         //assert
@@ -41,7 +43,7 @@ public class ValidationPipelineIntegrationTests
         var validPersonCommand = _fixtures.GetValidCommandInput();
 
         //act
-        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, NewPersonCommandResult>(
+        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, CreatedCommandResult>(
             client, "/Person", validPersonCommand);
 
         //assert

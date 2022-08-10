@@ -1,4 +1,5 @@
 ﻿using EasyCqrs.Commands;
+using EasyCqrs.Sample.Application.Commands.Common;
 
 namespace EasyCqrs.Sample.Application.Commands.DivideByZeroCommand;
 

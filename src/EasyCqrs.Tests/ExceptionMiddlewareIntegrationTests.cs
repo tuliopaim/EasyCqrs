@@ -3,6 +3,7 @@ using EasyCqrs.Queries;
 using EasyCqrs.Sample.Application.Commands.DivideByZeroCommand;
 using EasyCqrs.Tests.Config;
 using System.Net;
+using EasyCqrs.Sample.Application.Commands.Common;
 using Xunit;
 
 namespace EasyCqrs.Tests;

@@ -1,4 +1,4 @@
-﻿using EasyCqrs.Mvc;
+﻿using EasyCqrs.Notifications;
 using EasyCqrs.Sample.Application.Commands.DivideByZeroCommand;
 using EasyCqrs.Sample.Application.Queries.DivideByZeroQuery;
 using MediatR;
@@ -12,7 +12,7 @@ public class DivideByZeroController : CqrsController
 {
     private readonly IMediator _mediator;
 
-    public DivideByZeroController(IMediator mediator)
+    public DivideByZeroController(INotifier notifier, IMediator mediator) : base(notifier)
     {
         _mediator = mediator;
     }
