@@ -5,6 +5,7 @@ using System.Net;
 using EasyCqrs.Commands;
 using EasyCqrs.Sample.Application.Commands.Common;
 using Xunit;
+using EasyCqrs.Queries;
 
 namespace EasyCqrs.Tests;
 
@@ -36,7 +37,7 @@ public class ValidationPipelineIntegrationTests
     }
 
     [Fact]
-    public async Task Must_Return_OK_When_Valid_Command()
+    public async Task Must_NotReturn_BadRequest_ErrorList_When_Valid_Command()
     {
         //arrange
         var client = _fixtures.GetSampleApplication().CreateClient();
@@ -47,7 +48,8 @@ public class ValidationPipelineIntegrationTests
             client, "/Person", validPersonCommand);
 
         //assert
-        Assert.Equal(HttpStatusCode.OK, statusCode);
+        Assert.NotEqual(HttpStatusCode.BadRequest, statusCode);
+        Assert.NotEqual(HttpStatusCode.InternalServerError, statusCode);
         Assert.NotNull(result);
         Assert.Empty(result!.Errors);
     }
@@ -61,7 +63,7 @@ public class ValidationPipelineIntegrationTests
         var queryParams = GetPeopleQueryPaginatedParams(getPeopleQueryInput);
 
         //act
-        var (statusCode, result) = await _fixtures.Get<GetPeopleQueryPaginatedResult>(
+        var (statusCode, result) = await _fixtures.GetPaginated<GetPeopleQueryPaginatedItem>(
             client, "/Person/paginated", queryParams);
 
         //assert
@@ -79,7 +81,7 @@ public class ValidationPipelineIntegrationTests
         var queryParams = GetPeopleQueryPaginatedParams(getPeopleQueryInput);
 
         //act
-        var (statusCode, result) = await _fixtures.Get<GetPeopleQueryPaginatedResult>(
+        var (statusCode, result) = await _fixtures.GetPaginated<GetPeopleQueryPaginatedItem>(
             client, "/Person/paginated", queryParams);
 
         //assert
@@ -99,3 +101,5 @@ public class ValidationPipelineIntegrationTests
         };
     }
 }
+
+public record GetPeopleQueryPaginatedDto(IEnumerable<GetPeopleQueryPaginatedItem> Result, QueryPagination Pagination); 

@@ -65,35 +65,61 @@ public class IntegrationTestsFixture
             return (HttpStatusCode.InternalServerError, null);
         }
 
-        var result = JsonConvert.DeserializeObject<ApiResponse<TCommandResult?>>(
-            await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
+        var content = await response.Content.ReadAsStringAsync();
+
+        var result = JsonConvert.DeserializeObject<ApiResponse<TCommandResult?>>(content)
+            ?? throw new InvalidOperationException();
 
         return (response.StatusCode, result);
     }
 
-    public async Task<(HttpStatusCode StatusCode, ApiResponse<TItem?>? Result)> Get<TItem>(
+    public Task<(HttpStatusCode StatusCode, ApiResponse<TItem?>? Result)> Get<TItem>(
         HttpClient httpClient,
         string endpoint,
         Dictionary<string, string?> queryParams) where TItem : class
     {
-        {
-            var uri = QueryHelpers.AddQueryString(endpoint, queryParams);
-
-            var response = await httpClient.GetAsync(uri);
-
-            if (response.StatusCode == HttpStatusCode.InternalServerError)
-            {
-                return (HttpStatusCode.InternalServerError, null);
-            }
-
-            var result = JsonConvert.DeserializeObject<ApiResponse<TItem?>>(
-                await response.Content.ReadAsStringAsync()) ?? throw new InvalidOperationException();
-
-            return (response.StatusCode, result);
-        }
+        return GetBase<ApiResponse<TItem?>>(httpClient, endpoint, queryParams);
     }
-}
 
+    public Task<(HttpStatusCode StatusCode, ApiListResponse<TItem?>? Result)> GetList<TItem>(
+        HttpClient httpClient,
+        string endpoint,
+        Dictionary<string, string?> queryParams) where TItem : class
+    {
+        return GetBase<ApiListResponse<TItem?>>(httpClient, endpoint, queryParams);
+    }
+
+    public Task<(HttpStatusCode StatusCode, ApiPaginatedResponse<TItem?>? Result)> GetPaginated<TItem>(
+        HttpClient httpClient,
+        string endpoint,
+        Dictionary<string, string?> queryParams) where TItem : class
+    {
+        return GetBase<ApiPaginatedResponse<TItem?>>(httpClient, endpoint, queryParams);
+    }
+
+    private async Task<(HttpStatusCode StatusCode, TResult? Result)> GetBase<TResult>(
+        HttpClient httpClient,
+        string endpoint,
+        Dictionary<string, string?> queryParams) where TResult : class
+    {
+        var uri = QueryHelpers.AddQueryString(endpoint, queryParams);
+
+        var response = await httpClient.GetAsync(uri);
+
+        if (response.StatusCode == HttpStatusCode.InternalServerError)
+        {
+            return (HttpStatusCode.InternalServerError, null);
+        }
+
+        var content = await response.Content.ReadAsStringAsync();
+
+        var result = JsonConvert.DeserializeObject<TResult>(content)
+            ?? throw new InvalidOperationException();
+
+        return (response.StatusCode, result);
+    }
+
+}
 
 [CollectionDefinition(nameof(IntegrationTestsFixture))]
 public class IntegrationTestsCollection : ICollectionFixture<IntegrationTestsFixture>
