@@ -553,11 +553,11 @@ all the pipelines until it get into the Handler method, and then will return thr
 
 For example, today EasyCqrs has the LogPipelineBehavior and the ValidationPipelineBehavior (you also can create yours):
 
-Mediator.Send => LogPipeline => ValidationPipeline => Handler
+    Mediator.Send => LogPipeline => ValidationPipeline => Handler
 
 and the return
     
-Mediator.Send <= LogPipeline <= ValidationPipeline <= Handler
+    Mediator.Send <= LogPipeline <= ValidationPipeline <= Handler
 
 
 [Read more about MediatR Pipeline Behavior](https://codewithmukesh.com/blog/mediatr-pipeline-behaviour/)

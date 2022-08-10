@@ -63,6 +63,6 @@ public class LogPipelineIntegrationTests
             notification);
 
         //assert
-        pipelineLogServiceMock.Verify(x => x.LogAfterAsync(notification, default), Times.Once);
+        pipelineLogServiceMock.Verify(x => x.LogAfterAsync(notification, result, default), Times.Once);
     }
 }
