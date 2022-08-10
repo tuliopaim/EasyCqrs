@@ -16,7 +16,7 @@ public abstract class CqrsController : Controller
 
     protected IActionResult HandleResult<T>(QueryPaginatedResult<T> result)
     {
-        if (_notifier.Exception is not null)
+        if (_notifier.ContainsException())
         {
             return StatusCode(500);
         }
@@ -33,7 +33,7 @@ public abstract class CqrsController : Controller
 
     protected IActionResult HandleResult<T>(QueryResult<T> result)
     {
-        if (_notifier.Exception is not null)
+        if (_notifier.ContainsException())
         {
             return StatusCode(500);
         }
@@ -47,9 +47,9 @@ public abstract class CqrsController : Controller
         });
     }
 
-    protected IActionResult HandleResult(object result = null)
+    protected IActionResult HandleResult(object? result = null)
     {
-        if (_notifier.Exception is not null)
+        if (_notifier.ContainsException())
         {
             return StatusCode(500);
         }
@@ -65,7 +65,7 @@ public abstract class CqrsController : Controller
 
     protected IActionResult HandleCreatedResult(string actionName, object routeValues, CreatedCommandResult result)
     {
-        if (_notifier.Exception is not null)
+        if (_notifier.ContainsException())
         {
             return StatusCode(500);
         }
@@ -84,9 +84,7 @@ public abstract class CqrsController : Controller
         return BadRequest(new
         {
             _notifier.IsValid,
-            _notifier.Errors
+            errors = _notifier.Errors()
         });
     }
-
-
 }
