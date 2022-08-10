@@ -1,8 +1,8 @@
 ﻿namespace EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
 
-public class GetPersonByIdItem
+public class GetPersonByIdQueryItem
 {
-    public GetPersonByIdItem(Guid id, string name, int age)
+    public GetPersonByIdQueryItem(Guid id, string name, int age)
     {
         Id = id;
         Name = name;

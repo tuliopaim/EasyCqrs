@@ -3,6 +3,6 @@
 namespace EasyCqrs.Sample.Application.Queries.GetPeopleByAgeQuery;
 
 public record GetPeopleByAgeQueryInput(int Age)
-    : IQueryInput<QueryListResult<GetPeopleByAgeItem>>
+    : IQueryInput<QueryListResult<GetPeopleByAgeQueryItem>>
 {
 }

@@ -17,10 +17,10 @@ public class LogPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
     {
         await _pipelineLogService.LogBeforeAsync(request, cancellationToken);
 
-        var result = await next();
+        var response = await next();
 
-        await _pipelineLogService.LogAfterAsync(request, cancellationToken);
+        await _pipelineLogService.LogAfterAsync(request, response, cancellationToken);
 
-        return result;
+        return response;
     }
 }

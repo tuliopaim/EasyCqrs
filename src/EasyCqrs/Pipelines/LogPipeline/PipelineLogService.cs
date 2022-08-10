@@ -17,7 +17,7 @@ public class PipelineLogService : IPipelineLogService
         return Task.CompletedTask;
     }
 
-    public Task LogAfterAsync<TRequest>(TRequest request, CancellationToken cancellationToken)
+    public Task LogAfterAsync<TRequest, TResponse>(TRequest request, TResponse? response, CancellationToken cancellationToken)
     {
         _logger.LogDebug("{RequestType} - Leaving handler!", typeof(TRequest).Name);
         return Task.CompletedTask;

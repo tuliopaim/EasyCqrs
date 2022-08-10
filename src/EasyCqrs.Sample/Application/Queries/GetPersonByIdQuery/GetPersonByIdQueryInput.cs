@@ -2,6 +2,6 @@
 
 namespace EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
 
-public record GetPersonByIdQueryInput(Guid Id) : IQueryInput<QueryResult<GetPersonByIdItem>>
+public record GetPersonByIdQueryInput(Guid Id) : IQueryInput<QueryResult<GetPersonByIdQueryItem>>
 {
 }

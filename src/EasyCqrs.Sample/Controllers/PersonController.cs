@@ -1,5 +1,6 @@
 using EasyCqrs.Notifications;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
+using EasyCqrs.Sample.Application.Commands.UpdatePersonCommand;
 using EasyCqrs.Sample.Application.Queries.GetPeopleByAgeQuery;
 using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 using EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
@@ -25,6 +26,14 @@ public class PersonController : CqrsController
         var result = await _mediator.Send(commandInput);
 
         return HandleCreatedResult(nameof(GetPersonById), new { result.Id }, result);
+    }
+
+    [HttpPut(Name = nameof(UpdatePerson))]
+    public async Task<IActionResult> UpdatePerson([FromBody] UpdatePersonCommandInput commandInput)
+    {
+        var result = await _mediator.Send(commandInput);
+
+        return HandleResult(result);
     }
 
     [HttpGet("{id:guid}", Name = nameof(GetPersonById))]
