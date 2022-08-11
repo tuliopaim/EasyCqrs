@@ -40,8 +40,10 @@ public class LogPipelineIntegrationTests
             notification);
 
         //assert
-        pipelineLogServiceMock.Verify(x => x.LogBeforeAsync(notification, default), Times.Once);
-    }
+        pipelineLogServiceMock.Verify(x => x.LogBeforeAsync(
+            notification,
+            It.IsAny<CancellationToken>()), Times.Once);
+     }
 
     [Fact]
     public async Task Must_Invoke_LogAfterAsync()
@@ -63,6 +65,9 @@ public class LogPipelineIntegrationTests
             notification);
 
         //assert
-        pipelineLogServiceMock.Verify(x => x.LogAfterAsync(notification, result, default), Times.Once);
+        pipelineLogServiceMock.Verify(x => x.LogAfterAsync(
+            notification,
+            It.IsAny<CommandResult>(),
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 }
