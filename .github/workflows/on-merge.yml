@@ -5,7 +5,7 @@ on:
     branches: [ deploy ]
 
 jobs:
-  build-pack-push:
+  build-test-pack-push:
     env:
       easycqrs-path: ./src/EasyCqrs/EasyCqrs.csproj
 
