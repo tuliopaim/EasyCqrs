@@ -1,4 +1,5 @@
 ﻿using EasyCqrs.Mediator;
+using EasyCqrs.Notifications;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
@@ -8,15 +9,18 @@ namespace EasyCqrs.Pipelines;
 
 public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IMediatorInput<TResponse>
-    where TResponse : MediatorResult, new()
+    where TResponse : new()
 {
+    private readonly INotifier _notifier;
     private readonly ILogger<ValidationPipelineBehavior<TRequest, TResponse>> _logger;
     private readonly IEnumerable<IValidator<TRequest>>? _validators;
 
     public ValidationPipelineBehavior(
+        INotifier notifier,
         ILogger<ValidationPipelineBehavior<TRequest, TResponse>> logger,
         IEnumerable<IValidator<TRequest>>? validators)
     {
+        _notifier = notifier;
         _logger = logger;
         _validators = validators;
     }
@@ -46,11 +50,11 @@ public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
 
         foreach (var fail in failures)
         {
-            _logger.LogError("{RequestType} - Validation error: {ValidationError}",
+            _logger.LogInformation("{RequestType} - Validation error: {ValidationError}",
                 typeof(TRequest).Name,
                 fail.ErrorMessage);
 
-            result.AddError(fail.ErrorMessage);
+            _notifier.Notify(new Notification(fail.ErrorMessage));
         }
 
         return Task.FromResult(result);

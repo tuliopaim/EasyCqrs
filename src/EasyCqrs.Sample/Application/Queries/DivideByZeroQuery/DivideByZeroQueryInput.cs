@@ -2,7 +2,6 @@
 
 namespace EasyCqrs.Sample.Application.Queries.DivideByZeroQuery;
 
-public class DivideByZeroQueryInput : QueryInput<QueryResult<int>>
+public class DivideByZeroQueryInput : IQueryInput<QueryResult<int>>
 {
 }
-

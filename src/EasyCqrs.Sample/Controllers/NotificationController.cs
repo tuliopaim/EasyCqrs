@@ -1,4 +1,4 @@
-using EasyCqrs.Mvc;
+using EasyCqrs.Notifications;
 using EasyCqrs.Sample.Application.Commands.NotificationCommand;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ public class NotificationController : CqrsController
 {
     private readonly IMediator _mediator;
 
-    public NotificationController(IMediator mediator)
+    public NotificationController(INotifier notifier, IMediator mediator) : base(notifier)
     {
         _mediator = mediator;
     }

@@ -1,8 +1,8 @@
 ﻿namespace EasyCqrs.Sample.Application.Queries.GetPeopleByAgeQuery;
 
-public class GetPeopleByAgeItem
+public class GetPeopleByAgeQueryItem
 {
-    public GetPeopleByAgeItem(Guid id, string name, string email, int age)
+    public GetPeopleByAgeQueryItem(Guid id, string name, string email, int age)
     {
         Id = id;
         Name = name;

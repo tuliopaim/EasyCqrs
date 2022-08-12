@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>querypaginated</Title>
+			<Shortcut>querypaginated</Shortcut>
+			<Description>Code for QueryPaginated default structure</Description>
+			<Author>Túlio Paim</Author>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>queryname</ID>
+					<ToolTip>Query Name</ToolTip>
+					<Default>SomeQuery</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp">
+				<![CDATA[public class $queryname$QueryPaginatedInput 
+    : $selected$QueryPaginatedInput$end$<QueryPaginatedResult<$queryname$PaginatedItem>>
+{
+    
+}
+
+public class $queryname$PaginatedItem
+{
+    }
+
+public class $queryname$QueryPaginatedHandler : IQueryHandler<$queryname$QueryPaginatedInput, QueryPaginatedResult<$queryname$PaginatedItem>>
+{
+    public $queryname$QueryPaginatedHandler()
+    {
+
+    }
+
+    public async Task<QueryPaginatedResult<$queryname$PaginatedItem>> Handle($queryname$QueryPaginatedInput request, CancellationToken cancellationToken)
+    {
+        
+    }
+}
+]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

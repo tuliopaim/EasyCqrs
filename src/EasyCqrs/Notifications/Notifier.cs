@@ -2,28 +2,14 @@
 
 public class Notifier : INotifier
 {
-    private readonly List<Notification> _notifications = new();
+    private readonly List<INotification> _notifications = new();
 
-    public IReadOnlyList<Notification> Notifications => _notifications;
+    public IReadOnlyList<INotification> Notifications => _notifications;
 
     public bool IsValid => Notifications.Count == 0;
-
-    public void AddNotification(string notification)
+    
+    public void Notify(INotification notification)
     {
-        ArgumentNullException.ThrowIfNull(notification);
-
-        _notifications.Add(new Notification(notification));
-    }
-
-    public void AddNotifications(IEnumerable<string> notifications)
-    {
-        ArgumentNullException.ThrowIfNull(notifications);
-        
-        _notifications.AddRange(notifications.Select(x => new Notification(x)));
-    }
-
-    public IEnumerable<string> GetErrorList()
-    {
-        return Notifications.Select(x => x.Message);
+        _notifications.Add(notification);
     }
 }

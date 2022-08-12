@@ -2,6 +2,6 @@
 
 namespace EasyCqrs.Commands;
 
-public class CommandInputValidator<TCommandInput> : MediatorInputValidator<TCommandInput>
+public class CommandInputValidator<TCommandInput> : InputValidator<TCommandInput>
 {
 }

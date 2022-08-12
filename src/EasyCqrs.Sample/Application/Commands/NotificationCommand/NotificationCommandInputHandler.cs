@@ -14,7 +14,7 @@ public class NotificationCommandInputHandler : ICommandHandler<NotificationComma
 
     public Task<CommandResult> Handle(NotificationCommandInput request, CancellationToken cancellationToken)
     {
-        _notifier.AddNotification(request.Notification!);
+        _notifier.Notify(request.Notification!);
 
         return Task.FromResult(new CommandResult());
     }

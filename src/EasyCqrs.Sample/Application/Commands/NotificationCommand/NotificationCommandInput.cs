@@ -2,12 +2,6 @@
 
 namespace EasyCqrs.Sample.Application.Commands.NotificationCommand;
 
-public class NotificationCommandInput : CommandInput<CommandResult>
+public record NotificationCommandInput(string? Notification) : ICommandInput<CommandResult>
 {
-    public string? Notification { get; set; }
-
-    public NotificationCommandInput(string? notification)
-    {
-        Notification = notification;
-    }
 }

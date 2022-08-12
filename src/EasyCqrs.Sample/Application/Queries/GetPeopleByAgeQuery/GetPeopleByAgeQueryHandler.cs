@@ -3,7 +3,7 @@ using EasyCqrs.Sample.Repositories;
 
 namespace EasyCqrs.Sample.Application.Queries.GetPeopleByAgeQuery;
 
-public class GetPeopleByAgeyQueryListHandler : IQueryHandler<GetPeopleByAgeQueryInput, QueryListResult<GetPeopleByAgeItem>>
+public class GetPeopleByAgeyQueryListHandler : IQueryHandler<GetPeopleByAgeQueryInput, QueryListResult<GetPeopleByAgeQueryItem>>
 {
     private readonly IPersonRepository _personRepository;
 
@@ -12,12 +12,12 @@ public class GetPeopleByAgeyQueryListHandler : IQueryHandler<GetPeopleByAgeQuery
         _personRepository = personRepository;
     }
 
-    public Task<QueryListResult<GetPeopleByAgeItem>> Handle(GetPeopleByAgeQueryInput request, CancellationToken cancellationToken)
+    public Task<QueryListResult<GetPeopleByAgeQueryItem>> Handle(GetPeopleByAgeQueryInput request, CancellationToken cancellationToken)
     {
         var people = _personRepository.GetPeopleByAge(request.Age)
-            .Select(x => new GetPeopleByAgeItem(x.Id, x.Name, x.Email, x.Age));
+            .Select(x => new GetPeopleByAgeQueryItem(x.Id, x.Name, x.Email, x.Age));
 
-        return Task.FromResult(new QueryListResult<GetPeopleByAgeItem>
+        return Task.FromResult(new QueryListResult<GetPeopleByAgeQueryItem>
         {
             Result = people
         });

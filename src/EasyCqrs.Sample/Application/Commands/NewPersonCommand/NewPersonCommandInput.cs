@@ -1,17 +1,9 @@
 ﻿using EasyCqrs.Commands;
+using EasyCqrs.Sample.Application.Commands.Common;
 
 namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 
-public class NewPersonCommandInput : CommandInput<NewPersonCommandResult>
+public record NewPersonCommandInput(string? Name, string? Email, int Age) :
+    ICommandInput<CreatedCommandResult>
 {
-    public NewPersonCommandInput(string? name, string? email, int age)
-    {
-        Name = name;
-        Email = email;
-        Age = age;
-    }
-
-    public string? Name { get; }
-    public string? Email { get; }
-    public int Age { get; }
 }
