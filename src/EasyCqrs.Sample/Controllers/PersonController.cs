@@ -1,5 +1,6 @@
-using EasyCqrs.Mvc;
+using EasyCqrs.Notifications;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
+using EasyCqrs.Sample.Application.Commands.UpdatePersonCommand;
 using EasyCqrs.Sample.Application.Queries.GetPeopleByAgeQuery;
 using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 using EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
@@ -14,20 +15,28 @@ public class PersonController : CqrsController
 {
     private readonly IMediator _mediator;
 
-    public PersonController(IMediator mediator)
+    public PersonController(INotifier notifier, IMediator mediator) : base(notifier)
     {
         _mediator = mediator;
     }
 
-    [HttpPost(Name = "NewPerson")]
+    [HttpPost(Name = nameof(NewPerson))]
     public async Task<IActionResult> NewPerson([FromBody] NewPersonCommandInput commandInput)
+    {
+        var result = await _mediator.Send(commandInput);
+
+        return HandleCreatedResult(nameof(GetPersonById), new { result.Id }, result);
+    }
+
+    [HttpPut(Name = nameof(UpdatePerson))]
+    public async Task<IActionResult> UpdatePerson([FromBody] UpdatePersonCommandInput commandInput)
     {
         var result = await _mediator.Send(commandInput);
 
         return HandleResult(result);
     }
 
-    [HttpGet("{id:guid}", Name = "GetPersonById")]
+    [HttpGet("{id:guid}", Name = nameof(GetPersonById))]
     public async Task<IActionResult> GetPersonById(Guid id)
     {
         var result = await _mediator.Send(new GetPersonByIdQueryInput(id));
@@ -46,7 +55,7 @@ public class PersonController : CqrsController
     [HttpGet("{age:int}", Name = "GetPeopleByAge")]
     public async Task<IActionResult> GetPeopleByAge(int age)
     {
-        var result = await _mediator.Send(new GetPeopleByAgeQueryInput { Age = age }); ;
+        var result = await _mediator.Send(new GetPeopleByAgeQueryInput(age)); ;
 
         return HandleResult(result);
     }

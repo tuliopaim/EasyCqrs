@@ -1,5 +1,6 @@
 using EasyCqrs.Commands;
 using EasyCqrs.Notifications;
+using EasyCqrs.Sample.Application.Commands.Common;
 using EasyCqrs.Sample.Application.Events.NewPersonEvent;
 using EasyCqrs.Sample.Domain;
 using EasyCqrs.Sample.Repositories;
@@ -7,7 +8,7 @@ using MediatR;
 
 namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 
-public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, NewPersonCommandResult>
+public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, CreatedCommandResult>
 {
     private readonly INotifier _notifier;
     private readonly IPersonRepository _personRepository;
@@ -23,13 +24,13 @@ public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, Ne
         _mediator = mediator;
     }
 
-    public async Task<NewPersonCommandResult> Handle(NewPersonCommandInput request, CancellationToken cancellationToken)
+    public async Task<CreatedCommandResult> Handle(NewPersonCommandInput request, CancellationToken cancellationToken)
     {
         if (ExistsOtherPersonWithSameEmail(request))
         {
-            _notifier.AddNotification("Person with the same email already added!");
+            _notifier.Notify("Person with the same email already added!");
 
-            return new NewPersonCommandResult();
+            return new CreatedCommandResult();
         }
 
         var person = new Person(request.Name!, request.Email!, request.Age);
@@ -38,7 +39,7 @@ public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, Ne
 
         await _mediator.Publish(new NewPersonEventInput { PersonId = person.Id }, cancellationToken);
 
-        return new NewPersonCommandResult { Id = person.Id };
+        return new CreatedCommandResult { Id = person.Id };
     }
 
     private bool ExistsOtherPersonWithSameEmail(NewPersonCommandInput request)

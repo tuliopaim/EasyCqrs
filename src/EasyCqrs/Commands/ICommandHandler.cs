@@ -1,9 +1,9 @@
 ﻿using EasyCqrs.Mediator;
+using MediatR;
 
 namespace EasyCqrs.Commands;
 
-public interface ICommandHandler<in TCommandInput, TCommandResult> : IMediatorHandler<TCommandInput, TCommandResult>
-    where TCommandInput : CommandInput<TCommandResult>, IMediatorInput<TCommandResult>
-    where TCommandResult : CommandResult, new()
+public interface ICommandHandler<in TCommandInput, TCommandResult> : IRequestHandler<TCommandInput, TCommandResult>
+    where TCommandInput : ICommandInput<TCommandResult>, IMediatorInput<TCommandResult>
 {
 }

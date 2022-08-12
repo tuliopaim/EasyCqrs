@@ -2,7 +2,7 @@
 
 namespace EasyCqrs.Sample.Application.Commands.DivideByZeroCommand;
 
-public class DivideByZeroCommandInput : CommandInput<CommandResult>
+public class DivideByZeroCommandInput : ICommandInput<CommandResult>
 {
 }
 

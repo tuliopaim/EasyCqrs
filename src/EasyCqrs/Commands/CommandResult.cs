@@ -1,7 +1,5 @@
-﻿using EasyCqrs.Mediator;
+﻿namespace EasyCqrs.Commands;
 
-namespace EasyCqrs.Commands;
-
-public class CommandResult : MediatorResult
+public class CommandResult
 {
 }

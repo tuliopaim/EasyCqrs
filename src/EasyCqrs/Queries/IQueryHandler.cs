@@ -1,9 +1,8 @@
-﻿using EasyCqrs.Mediator;
+﻿using MediatR;
 
 namespace EasyCqrs.Queries;
 
-public interface IQueryHandler<in TQueryInput, TItem> : IMediatorHandler<TQueryInput, TItem>
-    where TQueryInput : QueryInput<TItem>
-    where TItem : QueryResult, new()
+public interface IQueryHandler<in TQueryInput, TItem> : IRequestHandler<TQueryInput, TItem>
+    where TQueryInput : IQueryInput<TItem>
 {
 }

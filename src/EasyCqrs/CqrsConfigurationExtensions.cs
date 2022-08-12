@@ -34,6 +34,7 @@ public static class CqrsConfigurationExtensions
         config?.Invoke(cqrsConfiguration);
 
         return services
+            .AddScoped<INotifier, Notifier>()
             .AddMediator(cqrsConfiguration)
             .AddValidators(cqrsConfiguration)
             .AddPipelines(cqrsConfiguration);
@@ -60,29 +61,16 @@ public static class CqrsConfigurationExtensions
         CqrsConfiguration cqrsConfiguration)
     {
         return services
-            .AddScoped<INotifier, Notifier>()
-            .AddExceptionPipeline(cqrsConfiguration)
             .AddLogPipelineBehavior(cqrsConfiguration)
-            .AddValidationPipeline(cqrsConfiguration)
-            .AddNotificationPipeline(cqrsConfiguration);
+            .AddValidationPipeline(cqrsConfiguration);
     }
-
-    private static IServiceCollection AddExceptionPipeline(this IServiceCollection services,
-        CqrsConfiguration cqrsConfiguration)
-    {
-        if (!cqrsConfiguration.WithExceptionPipeline) return services;
-
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ExceptionPipelineBehavior<,>));
-          
-        return services;
-    }
-
     private static IServiceCollection AddLogPipelineBehavior(this IServiceCollection services,
         CqrsConfiguration cqrsConfiguration)
     {
         if (!cqrsConfiguration.WithLogPipeline) return services;
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LogPipelineBehavior<,>));
+        services.AddScoped<IPipelineLogService, PipelineLogService>();
 
         return services;
     }
@@ -93,16 +81,6 @@ public static class CqrsConfigurationExtensions
         if (!cqrsConfiguration.WithValidationPipeline) return services;
 
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
-
-        return services;
-    }
-
-    private static IServiceCollection AddNotificationPipeline(this IServiceCollection services,
-        CqrsConfiguration cqrsConfiguration)
-    {
-        if (!cqrsConfiguration.WithNotificationPipeline) return services;
-
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(NotificationPipelineBehavior<,>));
 
         return services;
     }
