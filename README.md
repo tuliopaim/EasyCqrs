@@ -619,7 +619,7 @@ public class PipelineLogService : IPipelineLogService
 
 ### Validation Pipeline
 
-The Validation Pipeline is responsible to retreve all the validators for that input from the DI container,
-validate, and, in case of some error notify the INotifier with the error message and return.
+The Validation Pipeline is responsible for retreive all the validators for that input from the DI container,
+validate the input, and notifies the errors with the INotifier interface.
 
-Meaning that if the Input has any validation errors, the request will short circuit and return to the caller.
+Meaning that if the input has any validation errors, the request will short circuit and return to the caller.
