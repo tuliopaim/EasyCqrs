@@ -7,9 +7,10 @@ public class DivideByZeroQueryHandler : IQueryHandler<DivideByZeroQueryInput, Qu
     public Task<QueryResult<int>> Handle(DivideByZeroQueryInput request, CancellationToken cancellationToken)
     {
         var divisor = 0;
-        _ = 420 / divisor;
 
-        return Task.FromResult(new QueryResult<int>());
+        var result = 420 / divisor;
+
+        return Task.FromResult(new QueryResult<int> { Result = result });
     }
 }
 

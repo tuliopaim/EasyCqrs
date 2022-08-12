@@ -2,6 +2,6 @@
 
 namespace EasyCqrs.Queries;
 
-public class QueryInputValidator<TQueryInput> : MediatorInputValidator<TQueryInput>
+public class QueryInputValidator<TQueryInput> : InputValidator<TQueryInput>
 {
 }

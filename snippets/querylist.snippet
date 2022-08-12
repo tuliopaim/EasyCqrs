@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>querylist</Title>
+			<Shortcut>querylist</Shortcut>
+			<Description>Code for QueryList default structure</Description>
+			<Author>Túlio Paim</Author>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>querylist</ID>
+					<ToolTip>Query Name</ToolTip>
+					<Default>SomeQuery</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp">
+				<![CDATA[public class $querylist$QueryListInput 
+    : $selected$IQueryInput$end$<QueryListResult<$querylist$ListItem>>
+{
+    
+}
+
+public class $querylist$ListItem
+{
+}
+
+public class $querylist$QueryListHandler : IQueryHandler<$querylist$QueryListInput, QueryListResult<$querylist$ListItem>>
+{
+    public $querylist$QueryListHandler()
+    {
+
+    }
+
+    public async Task<QueryListResult<$querylist$ListItem>> Handle($querylist$QueryListInput request, CancellationToken cancellationToken)
+    {
+        
+    }
+}
+]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

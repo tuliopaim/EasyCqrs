@@ -2,9 +2,7 @@
 
 public interface INotifier
 {
-    IEnumerable<string> GetErrorList();
-    IReadOnlyList<Notification> Notifications { get; }
+    IReadOnlyList<INotification> Notifications { get; }
     bool IsValid { get; }
-    void AddNotification(string notification);
-    void AddNotifications(IEnumerable<string> notification);
+    void Notify(INotification notification);
 }

@@ -14,4 +14,11 @@ public class Person
     public string Name { get; private set; }
     public string Email { get; private set; }
     public int Age { get; private set; }
+
+    public void Update(string name, string email, int age)
+    {
+        Name = name;
+        Email = email;
+        Age = age;
+    }
 }

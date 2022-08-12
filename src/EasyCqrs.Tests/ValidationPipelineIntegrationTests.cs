@@ -2,16 +2,18 @@
 using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
 using EasyCqrs.Tests.Config;
 using System.Net;
+using EasyCqrs.Sample.Application.Commands.Common;
 using Xunit;
+using EasyCqrs.Queries;
 
 namespace EasyCqrs.Tests;
 
-[Collection(nameof(IntegrationTestsFixture))]
+[Collection(nameof(ValidationPipelineTestsFixture))]
 public class ValidationPipelineIntegrationTests
 {
-    private readonly IntegrationTestsFixture _fixtures;
+    private readonly ValidationPipelineTestsFixture _fixtures;
 
-    public ValidationPipelineIntegrationTests(IntegrationTestsFixture fixtures)
+    public ValidationPipelineIntegrationTests(ValidationPipelineTestsFixture fixtures)
     {
         _fixtures = fixtures;
     }
@@ -24,7 +26,7 @@ public class ValidationPipelineIntegrationTests
         var invalidPersonCommand = _fixtures.GetInvalidCommandInput();
 
         //act
-        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, NewPersonCommandResult>(
+        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, CreatedCommandResult>(
             client, "/Person", invalidPersonCommand);
 
         //assert
@@ -34,18 +36,19 @@ public class ValidationPipelineIntegrationTests
     }
 
     [Fact]
-    public async Task Must_Return_OK_When_Valid_Command()
+    public async Task Must_NotReturn_BadRequest_ErrorList_When_Valid_Command()
     {
         //arrange
         var client = _fixtures.GetSampleApplication().CreateClient();
         var validPersonCommand = _fixtures.GetValidCommandInput();
 
         //act
-        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, NewPersonCommandResult>(
+        var (statusCode, result) = await _fixtures.Post<NewPersonCommandInput, CreatedCommandResult>(
             client, "/Person", validPersonCommand);
 
         //assert
-        Assert.Equal(HttpStatusCode.OK, statusCode);
+        Assert.NotEqual(HttpStatusCode.BadRequest, statusCode);
+        Assert.NotEqual(HttpStatusCode.InternalServerError, statusCode);
         Assert.NotNull(result);
         Assert.Empty(result!.Errors);
     }
@@ -59,7 +62,7 @@ public class ValidationPipelineIntegrationTests
         var queryParams = GetPeopleQueryPaginatedParams(getPeopleQueryInput);
 
         //act
-        var (statusCode, result) = await _fixtures.Get<GetPeopleQueryPaginatedResult>(
+        var (statusCode, result) = await _fixtures.GetPaginated<GetPeopleQueryPaginatedItem>(
             client, "/Person/paginated", queryParams);
 
         //assert
@@ -77,7 +80,7 @@ public class ValidationPipelineIntegrationTests
         var queryParams = GetPeopleQueryPaginatedParams(getPeopleQueryInput);
 
         //act
-        var (statusCode, result) = await _fixtures.Get<GetPeopleQueryPaginatedResult>(
+        var (statusCode, result) = await _fixtures.GetPaginated<GetPeopleQueryPaginatedItem>(
             client, "/Person/paginated", queryParams);
 
         //assert
@@ -86,7 +89,7 @@ public class ValidationPipelineIntegrationTests
         Assert.Empty(result!.Errors);
     }
 
-    public Dictionary<string, string?> GetPeopleQueryPaginatedParams(GetPeopleQueryPaginatedInput query)
+    private Dictionary<string, string?> GetPeopleQueryPaginatedParams(GetPeopleQueryPaginatedInput query)
     {
         return new Dictionary<string, string?>
         {
@@ -97,3 +100,5 @@ public class ValidationPipelineIntegrationTests
         };
     }
 }
+
+public record GetPeopleQueryPaginatedDto(IEnumerable<GetPeopleQueryPaginatedItem> Result, QueryPagination Pagination); 
