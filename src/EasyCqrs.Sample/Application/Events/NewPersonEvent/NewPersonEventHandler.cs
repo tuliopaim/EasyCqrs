@@ -1,8 +1,6 @@
-﻿using EasyCqrs.Events;
+﻿namespace EasyCqrs.Sample.Application.Events.NewPersonEvent;
 
-namespace EasyCqrs.Sample.Application.Events.NewPersonEvent;
-
-public class NewPersonEventHandler : IEventHandler<NewPersonEventInput>
+public class NewPersonEventHandler : IEventHandler<NewPersonEvent>
 {
     private readonly ILogger<NewPersonEventHandler> _logger;
 
@@ -11,7 +9,7 @@ public class NewPersonEventHandler : IEventHandler<NewPersonEventInput>
         _logger = logger;
     }
 
-    public Task Handle(NewPersonEventInput notification, CancellationToken cancellationToken)
+    public Task Handle(NewPersonEvent notification, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Person [{PersonId}] created!", notification.PersonId);
 
