@@ -1,10 +1,10 @@
-﻿using EasyCqrs.Queries;
+﻿using EasyCqrs.Results;
 using EasyCqrs.Sample.Domain;
 using EasyCqrs.Sample.Repositories;
 
-namespace EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
+namespace EasyCqrs.Sample.Application.Queries.GetPeopleQueryPaginated;
 
-public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPaginatedInput, GetPeopleQueryPaginatedResult>
+public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPaginated, Pagination<GetPeopleQueryPaginatedItem>>
 {
     private readonly IPersonRepository _repository;
 
@@ -13,12 +13,14 @@ public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPagina
         _repository = repository;
     }
 
-    public Task<GetPeopleQueryPaginatedResult> Handle(GetPeopleQueryPaginatedInput request, CancellationToken cancellationToken)
+    public Task<Result<Pagination<GetPeopleQueryPaginatedItem>>> Handle(
+        GetPeopleQueryPaginated request,
+        CancellationToken cancellationToken)
     {
         var filteredData = GetFilteredPeople(request);
-        
+
         var total = filteredData.Count();
-        
+
         var paginatedResult = filteredData
             .OrderBy(x => x.Name)
             .Skip(request.PageNumber * request.PageSize)
@@ -30,19 +32,18 @@ public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPagina
                 Age = x.Age,
             }).ToList();
 
-        return Task.FromResult(new GetPeopleQueryPaginatedResult
-        {
-            Result = paginatedResult,
-            Pagination = new QueryPagination
-            {
-                PageNumber = request.PageNumber,
-                PageSize = paginatedResult.Count,
-                TotalElements = total
-            }
+        var result = Result.Success(new Pagination<GetPeopleQueryPaginatedItem>
+        { 
+            Itens = paginatedResult,
+            PageNumber = request.PageNumber,
+            PageSize = request.PageSize,
+            TotalElements = total,
         });
+
+        return Task.FromResult(result);
     }
 
-    private IQueryable<Person> GetFilteredPeople(GetPeopleQueryPaginatedInput request)
+    private IQueryable<Person> GetFilteredPeople(GetPeopleQueryPaginated request)
     {
         var filteredData = _repository.GetPeople();
 
