@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace EasyCqrs.Events;
+namespace EasyCqrs;
 
 public interface IEventInput : INotification
 {
