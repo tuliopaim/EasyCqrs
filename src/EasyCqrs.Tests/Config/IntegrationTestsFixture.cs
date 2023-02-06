@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using System.Net;
-using EasyCqrs.Tests.Models;
 using Xunit;
 
 namespace EasyCqrs.Tests.Config;
@@ -14,10 +14,10 @@ public class IntegrationTestsFixture
         return new WebApplicationFactory<Program>();
     }
 
-    public async Task<(HttpStatusCode StatusCode, ApiResponse<TCommandResult?>? Result)> Post<TCommand, TCommandResult>(
+    public async Task<(TCommandResult? Result, ErrorDto? Error)> Post<TCommand, TCommandResult>(
         HttpClient httpClient,
         string endpoint,
-        TCommand command) where TCommandResult : class
+        TCommand command) 
     {
         var json = JsonConvert.SerializeObject(command);
 
@@ -27,45 +27,32 @@ public class IntegrationTestsFixture
 
         if (response.StatusCode == HttpStatusCode.InternalServerError)
         {
-            return (HttpStatusCode.InternalServerError, null);
+            return (default, null);
         }
 
         var content = await response.Content.ReadAsStringAsync();
 
-        var result = JsonConvert.DeserializeObject<ApiResponse<TCommandResult?>>(content)
-            ?? throw new InvalidOperationException();
+        TCommandResult? result = default;
+        ErrorDto? error = null;
 
-        return (response.StatusCode, result);
+        if (response.IsSuccessStatusCode)
+        {
+            result = JsonConvert.DeserializeObject<TCommandResult>(content)
+                ?? throw new InvalidOperationException();
+        }
+        else
+        {
+            error = JsonConvert.DeserializeObject<ErrorDto>(content)
+                ?? throw new InvalidOperationException();
+        }
+
+        return (result, error);
     }
 
-    public Task<(HttpStatusCode StatusCode, ApiResponse<TItem?>? Result)> Get<TItem>(
+    public async Task<(HttpStatusCode StatusCode, TResult? Result)> Get<TResult>(
         HttpClient httpClient,
         string endpoint,
-        Dictionary<string, string?> queryParams) where TItem : class
-    {
-        return GetBase<ApiResponse<TItem?>>(httpClient, endpoint, queryParams);
-    }
-
-    public Task<(HttpStatusCode StatusCode, ApiListResponse<TItem?>? Result)> GetList<TItem>(
-        HttpClient httpClient,
-        string endpoint,
-        Dictionary<string, string?> queryParams) where TItem : class
-    {
-        return GetBase<ApiListResponse<TItem?>>(httpClient, endpoint, queryParams);
-    }
-
-    public Task<(HttpStatusCode StatusCode, ApiPaginatedResponse<TItem?>? Result)> GetPaginated<TItem>(
-        HttpClient httpClient,
-        string endpoint,
-        Dictionary<string, string?> queryParams) where TItem : class
-    {
-        return GetBase<ApiPaginatedResponse<TItem?>>(httpClient, endpoint, queryParams);
-    }
-
-    private async Task<(HttpStatusCode StatusCode, TResult? Result)> GetBase<TResult>(
-        HttpClient httpClient,
-        string endpoint,
-        Dictionary<string, string?> queryParams) where TResult : class
+        Dictionary<string, string?> queryParams)
     {
         var uri = QueryHelpers.AddQueryString(endpoint, queryParams);
 
@@ -73,20 +60,26 @@ public class IntegrationTestsFixture
 
         if (response.StatusCode == HttpStatusCode.InternalServerError)
         {
-            return (HttpStatusCode.InternalServerError, null);
+            return (HttpStatusCode.InternalServerError, default);
         }
 
         var content = await response.Content.ReadAsStringAsync();
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return (HttpStatusCode.NotFound, default);
+        }
 
         var result = JsonConvert.DeserializeObject<TResult>(content)
             ?? throw new InvalidOperationException();
 
         return (response.StatusCode, result);
     }
-
 }
 
 [CollectionDefinition(nameof(IntegrationTestsFixture))]
 public class IntegrationTestsCollection : ICollectionFixture<IntegrationTestsFixture>
 {
 }
+
+public record ErrorDto(string Message);
