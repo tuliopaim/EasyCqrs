@@ -2,9 +2,9 @@
 
 namespace EasyCqrs.Sample.Application.Commands.UpdatePersonCommand;
 
-public class UpdatePersonCommandInputValidator : AbstractValidator<UpdatePersonCommand>
+public class UpdatePersonCommandValidator : AbstractValidator<UpdatePersonCommand>
 {
-    public UpdatePersonCommandInputValidator()
+    public UpdatePersonCommandValidator()
     {
         RuleFor(x => x.Id).NotEmpty();
 

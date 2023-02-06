@@ -6,7 +6,7 @@ using MediatR;
 
 namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 
-public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, Guid>
+public class NewPersonCommandHandler : ICommandHandler<NewPersonCommand, Guid>
 {
     private readonly IPersonRepository _personRepository;
     private readonly IMediator _mediator;
@@ -19,7 +19,7 @@ public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, Gu
         _mediator = mediator;
     }
 
-    public async Task<Result<Guid>> Handle(NewPersonCommandInput request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(NewPersonCommand request, CancellationToken cancellationToken)
     {
         if (ExistsOtherPersonWithSameEmail(request))
         {
@@ -35,7 +35,7 @@ public class NewPersonCommandHandler : ICommandHandler<NewPersonCommandInput, Gu
         return Result.Success(person.Id);
     }
 
-    private bool ExistsOtherPersonWithSameEmail(NewPersonCommandInput request)
+    private bool ExistsOtherPersonWithSameEmail(NewPersonCommand request)
     {
         return _personRepository.GetPeople().Any(x => x.Email == request.Email);
     }

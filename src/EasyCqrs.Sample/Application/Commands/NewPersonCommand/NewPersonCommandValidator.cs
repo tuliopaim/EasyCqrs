@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 
-public class NewPersonCommandValidator : AbstractValidator<NewPersonCommandInput>
+public class NewPersonCommandValidator : AbstractValidator<NewPersonCommand>
 {
     public NewPersonCommandValidator()
     {

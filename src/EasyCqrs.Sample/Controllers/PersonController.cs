@@ -20,7 +20,7 @@ public class PersonController : BaseController
     }
 
     [HttpPost(Name = nameof(NewPerson))]
-    public async Task<IActionResult> NewPerson([FromBody] NewPersonCommandInput commandInput)
+    public async Task<IActionResult> NewPerson([FromBody] NewPersonCommand commandInput)
     {
         var result = await _mediator.Send(commandInput);
 

@@ -6,15 +6,15 @@ namespace EasyCqrs.Tests.Config;
 
 public class ValidationPipelineTestsFixture : IntegrationTestsFixture
 {
-    public NewPersonCommandInput GetInvalidCommandInput()
+    public NewPersonCommand GetInvalidCommandInput()
     {
-        var invalidPersonCommand = new NewPersonCommandInput("Túlio Paim", "tulio@email.com", 0);
+        var invalidPersonCommand = new NewPersonCommand("Túlio Paim", "tulio@email.com", 0);
         return invalidPersonCommand;
     }
 
-    public NewPersonCommandInput GetValidCommandInput()
+    public NewPersonCommand GetValidCommandInput()
     {
-        var validPersonCommand = new NewPersonCommandInput("Túlio Paim", "tulio@email.com", 24);
+        var validPersonCommand = new NewPersonCommand("Túlio Paim", "tulio@email.com", 24);
         return validPersonCommand;
     }
 

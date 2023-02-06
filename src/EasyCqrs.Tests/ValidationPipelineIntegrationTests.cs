@@ -25,7 +25,7 @@ public class ValidationPipelineIntegrationTests
         var invalidPersonCommand = _fixtures.GetInvalidCommandInput();
 
         //act
-        var (result, error) = await _fixtures.Post<NewPersonCommandInput, Guid>(
+        var (result, error) = await _fixtures.Post<NewPersonCommand, Guid>(
             client, "/Person", invalidPersonCommand);
 
         //assert
@@ -42,7 +42,7 @@ public class ValidationPipelineIntegrationTests
         var validPersonCommand = _fixtures.GetValidCommandInput();
 
         //act
-        var (result, error) = await _fixtures.Post<NewPersonCommandInput, Guid>(
+        var (result, error) = await _fixtures.Post<NewPersonCommand, Guid>(
             client, "/Person", validPersonCommand);
 
         //assert
