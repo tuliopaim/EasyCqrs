@@ -1,8 +1,7 @@
-using EasyCqrs.Notifications;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 using EasyCqrs.Sample.Application.Commands.UpdatePersonCommand;
 using EasyCqrs.Sample.Application.Queries.GetPeopleByAgeQuery;
-using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
+using EasyCqrs.Sample.Application.Queries.GetPeopleQueryPaginated;
 using EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +10,11 @@ namespace EasyCqrs.Sample.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class PersonController : CqrsController
+public class PersonController : BaseController
 {
     private readonly IMediator _mediator;
 
-    public PersonController(INotifier notifier, IMediator mediator) : base(notifier)
+    public PersonController(IMediator mediator)
     {
         _mediator = mediator;
     }
@@ -25,38 +24,40 @@ public class PersonController : CqrsController
     {
         var result = await _mediator.Send(commandInput);
 
-        return HandleCreatedResult(nameof(GetPersonById), new { result.Id }, result);
+        return result.IsSuccess
+            ? CreatedAtAction(nameof(GetPersonById), new { result.Value }, result)
+            : BadRequest(result.Error);
     }
 
     [HttpPut(Name = nameof(UpdatePerson))]
-    public async Task<IActionResult> UpdatePerson([FromBody] UpdatePersonCommandInput commandInput)
+    public async Task<IActionResult> UpdatePerson([FromBody] UpdatePersonCommand commandInput)
     {
         var result = await _mediator.Send(commandInput);
 
-        return HandleResult(result);
+        return result.IsSuccess ? Ok() : BadRequest(result.Error);
     }
 
     [HttpGet("{id:guid}", Name = nameof(GetPersonById))]
     public async Task<IActionResult> GetPersonById(Guid id)
     {
-        var result = await _mediator.Send(new GetPersonByIdQueryInput(id));
+        var result = await _mediator.Send(new GetPersonByIdQuery(id));
 
-        return HandleResult(result);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
     [HttpGet("paginated", Name = "GetPeoplePaginated")]
-    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeopleQueryPaginatedInput input)
+    public async Task<IActionResult> GetPeoplePaginated([FromQuery] GetPeopleQueryPaginated input)
     {
         var result = await _mediator.Send(input);
 
-        return HandleResult(result);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 
     [HttpGet("{age:int}", Name = "GetPeopleByAge")]
     public async Task<IActionResult> GetPeopleByAge(int age)
     {
-        var result = await _mediator.Send(new GetPeopleByAgeQueryInput(age)); ;
+        var result = await _mediator.Send(new GetPeopleByAgeQuery(age)); ;
 
-        return HandleResult(result);
+        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
     }
 }
