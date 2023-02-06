@@ -1,9 +1,8 @@
-﻿using EasyCqrs.Commands;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace EasyCqrs.Sample.Application.Commands.UpdatePersonCommand;
 
-public class UpdatePersonCommandInputValidator : CommandInputValidator<UpdatePersonCommand>
+public class UpdatePersonCommandInputValidator : AbstractValidator<UpdatePersonCommand>
 {
     public UpdatePersonCommandInputValidator()
     {

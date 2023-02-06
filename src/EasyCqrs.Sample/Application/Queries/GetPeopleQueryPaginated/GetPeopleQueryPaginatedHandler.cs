@@ -1,10 +1,11 @@
 ﻿using EasyCqrs.Results;
 using EasyCqrs.Sample.Domain;
 using EasyCqrs.Sample.Repositories;
+using InteligenteZap.Domain.Shared;
 
 namespace EasyCqrs.Sample.Application.Queries.GetPeopleQueryPaginated;
 
-public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPaginated, Pagination<GetPeopleQueryPaginatedItem>>
+public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPaginated, PaginatedList<GetPeopleQueryPaginatedItem>>
 {
     private readonly IPersonRepository _repository;
 
@@ -13,7 +14,7 @@ public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPagina
         _repository = repository;
     }
 
-    public Task<Result<Pagination<GetPeopleQueryPaginatedItem>>> Handle(
+    public Task<Result<PaginatedList<GetPeopleQueryPaginatedItem>>> Handle(
         GetPeopleQueryPaginated request,
         CancellationToken cancellationToken)
     {
@@ -32,15 +33,13 @@ public class GetPeopleQueryPaginatedHandler : IQueryHandler<GetPeopleQueryPagina
                 Age = x.Age,
             }).ToList();
 
-        var result = Result.Success(new Pagination<GetPeopleQueryPaginatedItem>
-        { 
-            Itens = paginatedResult,
-            PageNumber = request.PageNumber,
-            PageSize = request.PageSize,
-            TotalElements = total,
-        });
-
-        return Task.FromResult(result);
+        var paginatedList = new PaginatedList<GetPeopleQueryPaginatedItem>(
+            paginatedResult, 
+            total, 
+            request.PageNumber,
+            request.PageSize);
+        
+        return Task.FromResult(Result.Success(paginatedList));
     }
 
     private IQueryable<Person> GetFilteredPeople(GetPeopleQueryPaginated request)

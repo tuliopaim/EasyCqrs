@@ -25,7 +25,7 @@ public class PersonController : BaseController
         var result = await _mediator.Send(commandInput);
 
         return result.IsSuccess
-            ? CreatedAtAction(nameof(GetPersonById), new { result.Value }, result)
+            ? CreatedAtAction(nameof(GetPersonById), new { Id = result.Value }, result.Value)
             : BadRequest(result.Error);
     }
 
