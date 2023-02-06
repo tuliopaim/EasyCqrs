@@ -1,11 +1,10 @@
-using EasyCqrs.Commands;
 using FluentValidation;
 
 namespace EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 
-public class NewPersonCommandInputValidator : CommandInputValidator<NewPersonCommandInput>
+public class NewPersonCommandValidator : AbstractValidator<NewPersonCommandInput>
 {
-    public NewPersonCommandInputValidator()
+    public NewPersonCommandValidator()
     {
         RuleFor(x => x.Name)
             .Cascade(CascadeMode.Stop)

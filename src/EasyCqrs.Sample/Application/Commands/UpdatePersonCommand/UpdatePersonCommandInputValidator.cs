@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace EasyCqrs.Sample.Application.Commands.UpdatePersonCommand;
 
-public class UpdatePersonCommandInputValidator : CommandInputValidator<UpdatePersonCommandInput>
+public class UpdatePersonCommandInputValidator : CommandInputValidator<UpdatePersonCommand>
 {
     public UpdatePersonCommandInputValidator()
     {
