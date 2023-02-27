@@ -2,8 +2,6 @@
 
 public class Error : IEquatable<Error>
 {
-    public static Error None = new(string.Empty);
-
     public Error(string message)
     {
         ArgumentNullException.ThrowIfNull(message);
