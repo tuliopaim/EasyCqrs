@@ -34,26 +34,32 @@ public class ValidationPipeline<TRequest, TResponse> : IPipelineBehavior<TReques
 
         if (errors.Any())
         {
-            return CreateValidationResult<TResponse>(errors);
+            var result = CreateValidationResult(errors);
+
+            return result;
         }
 
         return await next();
     }
 
-    private static TResult CreateValidationResult<TResult>(Error[] errors)
-        where TResult : Result
+    private static TResponse CreateValidationResult(Error[] errors)
     {
-        if (typeof(TResult) == typeof(Result))
+        if (typeof(TResponse) == typeof(Result))
         {
-            return (ValidationResult.WithErrors(errors) as TResult)!;
+            return (Result.WithErrors(errors) as TResponse)!;
         }
 
-        object validationResult = typeof(ValidationResult<>)
-            .GetGenericTypeDefinition()
-            .MakeGenericType(typeof(TResult).GenericTypeArguments[0])
-            .GetMethod(nameof(ValidationResult.WithErrors))!
+        Type genericType = typeof(TResponse).GenericTypeArguments[0];
+
+        var result = typeof(Result)
+            .GetMethods()
+            .FirstOrDefault(m =>
+                m.Name == nameof(Result.WithErrors) &&
+                m.IsGenericMethod &&
+                m.GetGenericArguments().Length == 1)!
+            .MakeGenericMethod(genericType)!
             .Invoke(null, new object?[] { errors })!;
 
-        return (TResult)validationResult;
+        return (TResponse) result;
     }
 }
