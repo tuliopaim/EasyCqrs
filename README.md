@@ -10,23 +10,17 @@ A library to work easier with CQRS on top of MediatR.
     - [CLI](#cli)
     - [Package Manager Console](#package-manager-console)
   - [Features](#features)
+  - [Basic Concepts](#basic-concepts)
   - [Usage](#usage)
-    - [Registering](#registering)
-  - [Notifier](#notifier)
   - [Commands](#commands)
-    - [CommandResult](#command-result)
-    - [Command](#command-input)
-    - [CommandValidator](#command-input-validator)
+    - [Command](#command)
+    - [CommandValidator](#command-validator)
     - [CommandHandler](#command-handler)
   - [Queries](#queries)
-    - [QueryResult](#query-result)
-    - [Query](#query-input)
+    - [Query](#query)
     - [QueryHandler](#query-handler)
-    - [QueryListResult](#query-list-result)
-    - [QueryPaginatedInput](#query-paginated-input)
-    - [QueryPaginatedResult](#query-paginated-result)
   - [Events](#events)
-    - [Event](#event-input)
+    - [Event](#event)
     - [EventHandler](#event-handler)
   - [Pipelines](#pipelines)
     - [Log Pipeline](#log-pipeline)
@@ -52,6 +46,8 @@ Install-Package TP.EasyCqrs
 - Auto injected Handlers
 - Pipelines
   - Validation Pipeline - Auto validate inputs before entering the handler
+- Result / Result\<T> 
+- Error
 
 Read more about
 [Cqrs](https://martinfowler.com/bliki/CQRS.html)
@@ -71,10 +67,6 @@ You can structure the application in such a way that all classes related to that
         - NewPersonCommand.cs
         - NewPersonCommandHandler.cs
         - NewPersonCommandValidator.cs
-    - UpdatePersonCommand
-		- UpdatePersonCommand.cs
-    	- UpdatePersonCommandHandler.cs
-    	- UpdatePersonCommandValidator.cs	
 - Events
     - NewPersonEvent
         - NewPersonEventHandler.cs
@@ -92,8 +84,6 @@ You can structure the application in such a way that all classes related to that
 --- 
 
 ## Usage
-
-### Registering
 
 You can use the `AddCqrs` extension method to inject and configure
 the required services in the DI container, passing the Assemblies where the CQRS classes are located (inputs, results, validators and handlers).
@@ -119,10 +109,7 @@ used by the MeditR to mediate your Command.
 You must create a Command Input class by implementing the `ICommand<TCommandResult>`, where the `TCommandResult` is the result class.
 
 ```csharp
-public record NewPersonCommand(string? Name, string? Email, int Age) :
-    ICommand<Guid>
-{
-}
+public record NewPersonCommand(string? Name, string? Email, int Age) : ICommand<Guid>;
 ```
 
 ### Command Validator
@@ -215,9 +202,7 @@ The queries scope is similar to the command's scope:
 You must create a query input class by implementing `IQuery<TQueryResult>`, where the `TQueryResult` is your query result class.
 
 ``` csharp
-public record GetPersonByIdQuery(Guid Id) : IQuery<GetPersonByIdQueryItem>
-{
-}
+public record GetPersonByIdQuery(Guid Id) : IQuery<GetPersonByIdQueryItem>;
 ```
 
 ### Query Handler
@@ -258,12 +243,10 @@ Events works in a fire and forget way.
 
 >There is not Validation or Results in Events
 
-### Event Input
+### Event
 
 ``` csharp
-public record NewPersonEvent(Guid PersonId) : IEvent
-{
-}
+public record NewPersonEvent(Guid PersonId) : IEvent;
 ```
 
 ### Event Handler
@@ -289,19 +272,14 @@ public class NewPersonEventHandler : IEventHandler<NewPersonEvent>
 
 ## Pipelines
 
-Pipeline behaviors is a way that MeditR give us to insert code into the pipeline.
+Pipeline behaviors is a way that MeditR give us to insert code into the execution pipeline.
 
 When we call `IMediator.Send(new FooCommand())`, the input will pass throught
 all the pipelines until it get into the Handler method, and then will return throught them again. 
 
 For example, today EasyCqrs has the ValidationPipelineBehavior (you also can create yours):
 
-    Controller => ValidationPipeline => Handler
-
-and the return
-    
-    Controller <= ValidationPipeline <= Handler
-
+    Controller => ValidationPipeline => any-other-custom-pipeline => Handler
 
 [Read more about MediatR Pipeline Behavior](https://codewithmukesh.com/blog/mediatr-pipeline-behaviour/)
 
@@ -309,6 +287,6 @@ and the return
 ### Validation Pipeline
 
 The Validation Pipeline is responsible for retreive all the validators for that input from the DI container,
-validate the input, and notifies the errors with the INotifier interface.
+validate the input, and return the errors.
 
 Meaning that if the input has any validation errors, the request will short circuit and return to the caller.
