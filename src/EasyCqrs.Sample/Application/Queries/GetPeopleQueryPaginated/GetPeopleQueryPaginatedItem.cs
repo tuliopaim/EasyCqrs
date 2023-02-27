@@ -1,4 +1,4 @@
-﻿namespace EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
+﻿namespace EasyCqrs.Sample.Application.Queries.GetPeopleQueryPaginated;
 
 public class GetPeopleQueryPaginatedItem
 {

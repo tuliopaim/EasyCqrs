@@ -1,5 +1,4 @@
 using EasyCqrs;
-using EasyCqrs.Middlewares;
 using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 using EasyCqrs.Sample.Repositories;
 using FluentValidation;
@@ -29,8 +28,6 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.UseMiddleware<ExceptionMiddleware>();
 
 app.Run();
 

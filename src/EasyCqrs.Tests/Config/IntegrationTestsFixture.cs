@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
+using OneOf;
 using System.Net;
-using EasyCqrs.Tests.Models;
 using Xunit;
 
 namespace EasyCqrs.Tests.Config;
@@ -14,10 +14,10 @@ public class IntegrationTestsFixture
         return new WebApplicationFactory<Program>();
     }
 
-    public async Task<(HttpStatusCode StatusCode, ApiResponse<TCommandResult?>? Result)> Post<TCommand, TCommandResult>(
+    public async Task<OneOf<TCommandResult, ErrorDto>> Post<TCommand, TCommandResult>(
         HttpClient httpClient,
         string endpoint,
-        TCommand command) where TCommandResult : class
+        TCommand command) 
     {
         var json = JsonConvert.SerializeObject(command);
 
@@ -27,66 +27,75 @@ public class IntegrationTestsFixture
 
         if (response.StatusCode == HttpStatusCode.InternalServerError)
         {
-            return (HttpStatusCode.InternalServerError, null);
+            return new ErrorDto(new List<string> { "Internal Error" });
         }
 
         var content = await response.Content.ReadAsStringAsync();
 
-        var result = JsonConvert.DeserializeObject<ApiResponse<TCommandResult?>>(content)
+        if (response.IsSuccessStatusCode)
+        {
+            var result = JsonConvert.DeserializeObject<TCommandResult>(content)
+                ?? throw new InvalidOperationException();
+
+            return result;
+        }
+
+        var errors = JsonConvert.DeserializeObject<ErrorDto>(content)
             ?? throw new InvalidOperationException();
 
-        return (response.StatusCode, result);
+        return errors;
     }
 
-    public Task<(HttpStatusCode StatusCode, ApiResponse<TItem?>? Result)> Get<TItem>(
+    public async Task<OneOf<(HttpStatusCode StatusCode, TResult? Result), ErrorDto>> Get<TQuery, TResult>(
         HttpClient httpClient,
         string endpoint,
-        Dictionary<string, string?> queryParams) where TItem : class
+        TQuery query)
     {
-        return GetBase<ApiResponse<TItem?>>(httpClient, endpoint, queryParams);
-    }
-
-    public Task<(HttpStatusCode StatusCode, ApiListResponse<TItem?>? Result)> GetList<TItem>(
-        HttpClient httpClient,
-        string endpoint,
-        Dictionary<string, string?> queryParams) where TItem : class
-    {
-        return GetBase<ApiListResponse<TItem?>>(httpClient, endpoint, queryParams);
-    }
-
-    public Task<(HttpStatusCode StatusCode, ApiPaginatedResponse<TItem?>? Result)> GetPaginated<TItem>(
-        HttpClient httpClient,
-        string endpoint,
-        Dictionary<string, string?> queryParams) where TItem : class
-    {
-        return GetBase<ApiPaginatedResponse<TItem?>>(httpClient, endpoint, queryParams);
-    }
-
-    private async Task<(HttpStatusCode StatusCode, TResult? Result)> GetBase<TResult>(
-        HttpClient httpClient,
-        string endpoint,
-        Dictionary<string, string?> queryParams) where TResult : class
-    {
-        var uri = QueryHelpers.AddQueryString(endpoint, queryParams);
+        var queryParams = QueryParams(query);
+        var uri = QueryHelpers.AddQueryString(endpoint, queryParams!);
 
         var response = await httpClient.GetAsync(uri);
 
         if (response.StatusCode == HttpStatusCode.InternalServerError)
         {
-            return (HttpStatusCode.InternalServerError, null);
+            return (HttpStatusCode.InternalServerError, default);
         }
 
         var content = await response.Content.ReadAsStringAsync();
 
-        var result = JsonConvert.DeserializeObject<TResult>(content)
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return (HttpStatusCode.NotFound, default);
+        }
+
+        if (response.IsSuccessStatusCode)
+        {
+            var result = JsonConvert.DeserializeObject<TResult>(content)
+                ?? throw new InvalidOperationException();
+
+            return (response.StatusCode, result);
+        }
+
+        var errors = JsonConvert.DeserializeObject<ErrorDto>(content)
             ?? throw new InvalidOperationException();
 
-        return (response.StatusCode, result);
+        return errors;
     }
+    
 
+    private static Dictionary<string, string> QueryParams<TQuery>(TQuery query)
+    {
+        var querySerialized = JsonConvert.SerializeObject(query);
+
+        var queryAsDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(querySerialized);
+        
+        return queryAsDictionary!;
+    }
 }
 
 [CollectionDefinition(nameof(IntegrationTestsFixture))]
 public class IntegrationTestsCollection : ICollectionFixture<IntegrationTestsFixture>
 {
 }
+
+public record ErrorDto(List<string> Errors);

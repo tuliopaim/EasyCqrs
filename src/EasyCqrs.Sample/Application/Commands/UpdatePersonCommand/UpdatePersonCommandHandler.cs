@@ -1,37 +1,32 @@
-﻿using EasyCqrs.Commands;
-using EasyCqrs.Notifications;
+﻿using EasyCqrs.Results;
 using EasyCqrs.Sample.Repositories;
 
 namespace EasyCqrs.Sample.Application.Commands.UpdatePersonCommand;
 
-public class UpdatePersonCommandHandler : ICommandHandler<UpdatePersonCommandInput, CommandResult>
+public class UpdatePersonCommandHandler : ICommandHandler<UpdatePersonCommand>
 {
     private readonly IPersonRepository _personRepository;
-    private readonly INotifier _notifier;
 
     public UpdatePersonCommandHandler(
-        IPersonRepository personRepository,
-        INotifier notifier)
+        IPersonRepository personRepository)
     {
         _personRepository = personRepository;
-        _notifier = notifier;
     }
 
-    public async Task<CommandResult> Handle(UpdatePersonCommandInput request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdatePersonCommand request, CancellationToken cancellationToken)
     {
         var person = _personRepository.GetPersonById(request.Id);
 
         if (person is null)
         {
-            _notifier.Notify("Person not found!");
-            return new();
+            return new Error("Person not found!");
         }
 
         person.Update(request.Name!, request.Email!, request.Age);
 
         _personRepository.UpdatePerson(person);
 
-        return new();
+        return Result.Success();
     }
 }
 

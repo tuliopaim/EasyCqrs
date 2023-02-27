@@ -1,9 +1,9 @@
-﻿using EasyCqrs.Queries;
+﻿using EasyCqrs.Results;
 using EasyCqrs.Sample.Repositories;
 
 namespace EasyCqrs.Sample.Application.Queries.GetPeopleByAgeQuery;
 
-public class GetPeopleByAgeyQueryListHandler : IQueryHandler<GetPeopleByAgeQueryInput, QueryListResult<GetPeopleByAgeQueryItem>>
+public class GetPeopleByAgeyQueryListHandler : IQueryHandler<GetPeopleByAgeQuery, IEnumerable<GetPeopleByAgeQueryItem>>
 {
     private readonly IPersonRepository _personRepository;
 
@@ -12,14 +12,11 @@ public class GetPeopleByAgeyQueryListHandler : IQueryHandler<GetPeopleByAgeQuery
         _personRepository = personRepository;
     }
 
-    public Task<QueryListResult<GetPeopleByAgeQueryItem>> Handle(GetPeopleByAgeQueryInput request, CancellationToken cancellationToken)
+    public Task<Result<IEnumerable<GetPeopleByAgeQueryItem>>> Handle(GetPeopleByAgeQuery request, CancellationToken cancellationToken)
     {
         var people = _personRepository.GetPeopleByAge(request.Age)
             .Select(x => new GetPeopleByAgeQueryItem(x.Id, x.Name, x.Email, x.Age));
 
-        return Task.FromResult(new QueryListResult<GetPeopleByAgeQueryItem>
-        {
-            Result = people
-        });
+        return Task.FromResult(Result.Success(people));
     }
 }

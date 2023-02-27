@@ -1,9 +1,9 @@
-﻿using EasyCqrs.Queries;
+﻿using EasyCqrs.Results;
 using EasyCqrs.Sample.Repositories;
 
 namespace EasyCqrs.Sample.Application.Queries.GetPersonByIdQuery;
 
-public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQueryInput, QueryResult<GetPersonByIdQueryItem>>
+public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQuery, GetPersonByIdQueryItem>
 {
     private readonly IPersonRepository _personRepository;
 
@@ -12,7 +12,7 @@ public class GetPersonByIdQueryHandler : IQueryHandler<GetPersonByIdQueryInput, 
         _personRepository = personRepository;
     }
     
-    public async Task<QueryResult<GetPersonByIdQueryItem>> Handle(GetPersonByIdQueryInput request, CancellationToken cancellationToken)
+    public async Task<Result<GetPersonByIdQueryItem>> Handle(GetPersonByIdQuery request, CancellationToken cancellationToken)
     {
         var person = _personRepository.GetPeople().FirstOrDefault(x => x.Id == request.Id);
         
