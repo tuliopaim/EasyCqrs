@@ -26,7 +26,7 @@ public class PersonController : BaseController
 
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetPersonById), new { Id = result.Value }, result.Value)
-            : BadRequest(result.Error);
+            : HandleFailure(result);
     }
 
     [HttpPut(Name = nameof(UpdatePerson))]
@@ -34,7 +34,9 @@ public class PersonController : BaseController
     {
         var result = await _mediator.Send(commandInput);
 
-        return result.IsSuccess ? Ok() : BadRequest(result.Error);
+        return result.IsSuccess 
+            ? Ok()
+            : HandleFailure(result);
     }
 
     [HttpGet("{id:guid}", Name = nameof(GetPersonById))]
@@ -42,7 +44,9 @@ public class PersonController : BaseController
     {
         var result = await _mediator.Send(new GetPersonByIdQuery(id));
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        return result.IsSuccess 
+            ? Ok(result.Value) 
+            : HandleFailure(result);
     }
 
     [HttpGet("paginated", Name = "GetPeoplePaginated")]
@@ -50,7 +54,9 @@ public class PersonController : BaseController
     {
         var result = await _mediator.Send(input);
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        return result.IsSuccess 
+            ? Ok(result.Value) 
+            : HandleFailure(result);
     }
 
     [HttpGet("{age:int}", Name = "GetPeopleByAge")]
@@ -58,6 +64,8 @@ public class PersonController : BaseController
     {
         var result = await _mediator.Send(new GetPeopleByAgeQuery(age)); ;
 
-        return result.IsSuccess ? Ok(result.Value) : BadRequest(result.Error);
+        return result.IsSuccess 
+            ? Ok(result.Value) 
+            : HandleFailure(result);
     }
 }

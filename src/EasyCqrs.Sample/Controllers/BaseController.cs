@@ -10,39 +10,7 @@ public abstract class BaseController : ControllerBase
         return result switch
         {
             { IsSuccess: true } => throw new InvalidOperationException(),
-
-            IValidationResult validationResult =>
-                BadRequest(CreateProblemDetails(
-                    "Validation Error",
-                    StatusCodes.Status400BadRequest,
-                    result.Error,
-                    validationResult.Errors)),
-            _ =>
-                BadRequest(CreateProblemDetails(
-                    "Bad Request",
-                    StatusCodes.Status400BadRequest,
-                    result.Error))
+            _ => BadRequest(new { Errors = result.Errors.Select(x => x.Message) })
         };
-    }
-
-    private static ProblemDetails CreateProblemDetails(
-        string title,
-        int status,
-        Error error,
-        Error[]? errors = null)
-    {
-        var problemDetails = new ProblemDetails()
-        {
-            Title = title,
-            Detail = error.Message,
-            Status = status,
-        };
-
-        if (errors is not null)
-        {
-            problemDetails.Extensions.Add(nameof(errors), errors);
-        }
-
-        return problemDetails;
     }
 }
