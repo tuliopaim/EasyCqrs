@@ -23,8 +23,7 @@ A library to work easier with CQRS on top of MediatR.
     - [Event](#event)
     - [EventHandler](#event-handler)
   - [Pipelines](#pipelines)
-    - [Log Pipeline](#log-pipeline)
-	- [Validation Pipeline](#validation-pipeline)
+    - [Validation Pipeline](#validation-pipeline)
 
 ## Install
 
