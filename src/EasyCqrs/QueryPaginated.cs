@@ -1,6 +1,4 @@
-﻿using InteligenteZap.Domain.Shared;
-
-namespace EasyCqrs;
+﻿namespace EasyCqrs;
 
 public class QueryPaginated<TResponse> : IQuery<PaginatedList<TResponse>>
 {

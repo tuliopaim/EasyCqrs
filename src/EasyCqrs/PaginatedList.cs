@@ -1,4 +1,4 @@
-﻿namespace InteligenteZap.Domain.Shared;
+﻿namespace EasyCqrs;
 
 public class PaginatedList<T>
 {

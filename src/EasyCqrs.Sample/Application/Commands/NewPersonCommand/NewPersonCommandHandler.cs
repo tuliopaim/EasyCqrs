@@ -30,7 +30,7 @@ public class NewPersonCommandHandler : ICommandHandler<NewPersonCommand, Guid>
 
         _personRepository.AddPerson(person);
 
-        await _mediator.Publish(new NewPersonEvent { PersonId = person.Id }, cancellationToken);
+        await _mediator.Publish(new NewPersonEvent(person.Id), cancellationToken);
 
         return Result.Success(person.Id);
     }

@@ -1,7 +1,6 @@
 ﻿using EasyCqrs.Results;
 using EasyCqrs.Sample.Domain;
 using EasyCqrs.Sample.Repositories;
-using InteligenteZap.Domain.Shared;
 
 namespace EasyCqrs.Sample.Application.Queries.GetPeopleQueryPaginated;
 
