@@ -1,8 +1,7 @@
 ﻿using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
 using EasyCqrs.Sample.Application.Queries.GetPeopleQueryPaginated;
 using EasyCqrs.Tests.Config;
-using InteligenteZap.Domain.Shared;
-using System.Net;
+using FluentAssertions;
 using Xunit;
 
 namespace EasyCqrs.Tests;
@@ -22,16 +21,16 @@ public class ValidationPipelineIntegrationTests
     {
         //arrange
         var client = _fixtures.GetSampleApplication().CreateClient();
-        var invalidPersonCommand = _fixtures.GetInvalidCommandInput();
+        var invalidPersonCommand = ValidationPipelineTestsFixture.GetInvalidCommandInput();
 
         //act
-        var (result, error) = await _fixtures.Post<NewPersonCommand, Guid>(
+        var result = await _fixtures.Post<NewPersonCommand, Guid>(
             client, "/Person", invalidPersonCommand);
 
         //assert
-        Assert.Equal(default, result);
-        Assert.NotNull(error);
-        Assert.NotNull(error?.Message);
+        result.IsT0.Should().BeFalse();
+        result.IsT1.Should().BeTrue();
+        result.AsT1.Errors.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -39,15 +38,16 @@ public class ValidationPipelineIntegrationTests
     {
         //arrange
         var client = _fixtures.GetSampleApplication().CreateClient();
-        var validPersonCommand = _fixtures.GetValidCommandInput();
+        var validPersonCommand = ValidationPipelineTestsFixture.GetValidCommandInput();
 
         //act
-        var (result, error) = await _fixtures.Post<NewPersonCommand, Guid>(
+        var result = await _fixtures.Post<NewPersonCommand, Guid>(
             client, "/Person", validPersonCommand);
 
         //assert
-        Assert.NotEqual(default, result);
-        Assert.Null(error);
+        result.IsT0.Should().BeTrue();
+        result.IsT1.Should().BeFalse();
+        result.AsT0.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -55,26 +55,16 @@ public class ValidationPipelineIntegrationTests
     {
         //arrange
         var client = _fixtures.GetSampleApplication().CreateClient();
-        var getPeopleQueryInput = _fixtures.GetValidQueryInput();
-        var queryParams = GetPeopleQueryPaginatedParams(getPeopleQueryInput);
+        var queryInput = ValidationPipelineTestsFixture.GetValidQueryInput();
 
         //act
-        var (statusCode, result) = await _fixtures.Get<PaginatedList<GetPeopleQueryPaginatedItem>>(
-            client, "/Person/paginated", queryParams);
+        var result = await _fixtures.Get<GetPeopleQueryPaginated, PaginatedList<GetPeopleQueryPaginatedItem>>(
+            client, "/Person/paginated", queryInput);
 
         //assert
-        Assert.Equal(HttpStatusCode.OK, statusCode);
-        Assert.NotNull(result);
-    }
-
-    private Dictionary<string, string?> GetPeopleQueryPaginatedParams(GetPeopleQueryPaginated query)
-    {
-        return new Dictionary<string, string?>
-        {
-            { nameof(query.Name), query.Name },
-            { nameof(query.PageNumber), query.PageNumber.ToString() },
-            { nameof(query.PageSize), query.PageSize.ToString() },
-            { nameof(query.Age), query.Age.ToString() }
-        };
+        result.IsT0.Should().BeTrue();
+        result.IsT1.Should().BeFalse();
+        result.AsT0.Result.Should().NotBeNull();
+        result.AsT0.Result!.Pagina.Should().Be(queryInput.PageNumber);
     }
 }

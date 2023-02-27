@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
+using OneOf;
 using System.Net;
 using Xunit;
 
@@ -14,7 +14,7 @@ public class IntegrationTestsFixture
         return new WebApplicationFactory<Program>();
     }
 
-    public async Task<(TCommandResult? Result, ErrorDto? Error)> Post<TCommand, TCommandResult>(
+    public async Task<OneOf<TCommandResult, ErrorDto>> Post<TCommand, TCommandResult>(
         HttpClient httpClient,
         string endpoint,
         TCommand command) 
@@ -27,34 +27,32 @@ public class IntegrationTestsFixture
 
         if (response.StatusCode == HttpStatusCode.InternalServerError)
         {
-            return (default, null);
+            return new ErrorDto(new List<string> { "Internal Error" });
         }
 
         var content = await response.Content.ReadAsStringAsync();
 
-        TCommandResult? result = default;
-        ErrorDto? error = null;
-
         if (response.IsSuccessStatusCode)
         {
-            result = JsonConvert.DeserializeObject<TCommandResult>(content)
+            var result = JsonConvert.DeserializeObject<TCommandResult>(content)
                 ?? throw new InvalidOperationException();
-        }
-        else
-        {
-            error = JsonConvert.DeserializeObject<ErrorDto>(content)
-                ?? throw new InvalidOperationException();
+
+            return result;
         }
 
-        return (result, error);
+        var errors = JsonConvert.DeserializeObject<ErrorDto>(content)
+            ?? throw new InvalidOperationException();
+
+        return errors;
     }
 
-    public async Task<(HttpStatusCode StatusCode, TResult? Result)> Get<TResult>(
+    public async Task<OneOf<(HttpStatusCode StatusCode, TResult? Result), ErrorDto>> Get<TQuery, TResult>(
         HttpClient httpClient,
         string endpoint,
-        Dictionary<string, string?> queryParams)
+        TQuery query)
     {
-        var uri = QueryHelpers.AddQueryString(endpoint, queryParams);
+        var queryParams = QueryParams(query);
+        var uri = QueryHelpers.AddQueryString(endpoint, queryParams!);
 
         var response = await httpClient.GetAsync(uri);
 
@@ -70,10 +68,28 @@ public class IntegrationTestsFixture
             return (HttpStatusCode.NotFound, default);
         }
 
-        var result = JsonConvert.DeserializeObject<TResult>(content)
+        if (response.IsSuccessStatusCode)
+        {
+            var result = JsonConvert.DeserializeObject<TResult>(content)
+                ?? throw new InvalidOperationException();
+
+            return (response.StatusCode, result);
+        }
+
+        var errors = JsonConvert.DeserializeObject<ErrorDto>(content)
             ?? throw new InvalidOperationException();
 
-        return (response.StatusCode, result);
+        return errors;
+    }
+    
+
+    private static Dictionary<string, string> QueryParams<TQuery>(TQuery query)
+    {
+        var querySerialized = JsonConvert.SerializeObject(query);
+
+        var queryAsDictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(querySerialized);
+        
+        return queryAsDictionary!;
     }
 }
 
@@ -82,4 +98,4 @@ public class IntegrationTestsCollection : ICollectionFixture<IntegrationTestsFix
 {
 }
 
-public record ErrorDto(string Message);
+public record ErrorDto(List<string> Errors);

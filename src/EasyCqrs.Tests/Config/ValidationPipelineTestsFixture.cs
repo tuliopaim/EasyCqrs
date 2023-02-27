@@ -6,19 +6,19 @@ namespace EasyCqrs.Tests.Config;
 
 public class ValidationPipelineTestsFixture : IntegrationTestsFixture
 {
-    public NewPersonCommand GetInvalidCommandInput()
+    public static NewPersonCommand GetInvalidCommandInput()
     {
         var invalidPersonCommand = new NewPersonCommand("Túlio Paim", "tulio@email.com", 0);
         return invalidPersonCommand;
     }
 
-    public NewPersonCommand GetValidCommandInput()
+    public static NewPersonCommand GetValidCommandInput()
     {
         var validPersonCommand = new NewPersonCommand("Túlio Paim", "tulio@email.com", 24);
         return validPersonCommand;
     }
 
-    public GetPeopleQueryPaginated GetInvalidQueryInput()
+    public static GetPeopleQueryPaginated GetInvalidQueryInput()
     {
         var invalidPersonCommand = new GetPeopleQueryPaginated
         {
@@ -29,12 +29,12 @@ public class ValidationPipelineTestsFixture : IntegrationTestsFixture
         return invalidPersonCommand;
     }
 
-    public GetPeopleQueryPaginated GetValidQueryInput()
+    public static GetPeopleQueryPaginated GetValidQueryInput()
     {
         var invalidPersonCommand = new GetPeopleQueryPaginated
         {
             PageNumber = 2,
-            PageSize = 50
+            PageSize = 2
         };
 
         return invalidPersonCommand;
