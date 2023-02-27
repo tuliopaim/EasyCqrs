@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using EasyCqrs.Notifications;
 using EasyCqrs.Pipelines;
 using FluentValidation;
 using MediatR;
@@ -34,45 +33,9 @@ public static class CqrsConfigurationExtensions
         config?.Invoke(cqrsConfiguration);
 
         return services
-            .AddScoped<INotifier, Notifier>()
-            .AddMediator(cqrsConfiguration)
-            .AddValidators(cqrsConfiguration)
-            .AddPipelines(cqrsConfiguration);
-    }
-    
-    private static IServiceCollection AddMediator(this IServiceCollection services,
-        CqrsConfiguration cqrsConfiguration)
-    {
-        return services.AddMediatR(cqrsConfiguration.Assemblies, config =>
-        {
-            config.AsScoped();
-        });
-    }
-
-    private static IServiceCollection AddValidators(this IServiceCollection services,
-        CqrsConfiguration cqrsConfiguration)
-    {
-        services.AddValidatorsFromAssemblies(cqrsConfiguration.Assemblies);
-
-        return services;
-    }
-
-    private static IServiceCollection AddPipelines(this IServiceCollection services,
-        CqrsConfiguration cqrsConfiguration)
-    {
-        return services
-            .AddLogPipelineBehavior(cqrsConfiguration)
-            .AddValidationPipeline(cqrsConfiguration);
-    }
-    private static IServiceCollection AddLogPipelineBehavior(this IServiceCollection services,
-        CqrsConfiguration cqrsConfiguration)
-    {
-        if (!cqrsConfiguration.WithLogPipeline) return services;
-
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LogPipelineBehavior<,>));
-        services.AddScoped<IPipelineLogService, PipelineLogService>();
-
-        return services;
+            .AddValidatorsFromAssemblies(cqrsConfiguration.Assemblies)
+            .AddValidationPipeline(cqrsConfiguration)
+            .AddMediatR(cqrsConfiguration.Assemblies, config =>config.AsScoped());
     }
 
     private static IServiceCollection AddValidationPipeline(this IServiceCollection services,
@@ -80,7 +43,7 @@ public static class CqrsConfigurationExtensions
     {
         if (!cqrsConfiguration.WithValidationPipeline) return services;
 
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipeline<,>));
 
         return services;
     }

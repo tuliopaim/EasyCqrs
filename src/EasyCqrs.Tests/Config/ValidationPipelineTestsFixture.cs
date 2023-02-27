@@ -1,40 +1,42 @@
 ﻿using EasyCqrs.Sample.Application.Commands.NewPersonCommand;
-using EasyCqrs.Sample.Application.Queries.GetPeoplePaginatedQuery;
+using EasyCqrs.Sample.Application.Queries.GetPeopleQueryPaginated;
 using Xunit;
 
 namespace EasyCqrs.Tests.Config;
 
 public class ValidationPipelineTestsFixture : IntegrationTestsFixture
 {
-    public NewPersonCommandInput GetInvalidCommandInput()
+    public static NewPersonCommand GetInvalidCommandInput()
     {
-        var invalidPersonCommand = new NewPersonCommandInput("Túlio Paim", "tulio@email.com", 0);
+        var invalidPersonCommand = new NewPersonCommand("Túlio Paim", "tulio@email.com", 0);
         return invalidPersonCommand;
     }
 
-    public NewPersonCommandInput GetValidCommandInput()
+    public static NewPersonCommand GetValidCommandInput()
     {
-        var validPersonCommand = new NewPersonCommandInput("Túlio Paim", "tulio@email.com", 24);
+        var validPersonCommand = new NewPersonCommand("Túlio Paim", "tulio@email.com", 24);
         return validPersonCommand;
     }
 
-    public GetPeopleQueryPaginatedInput GetInvalidQueryInput()
+    public static GetPeopleQueryPaginated GetInvalidQueryInput()
     {
-        var invalidPersonCommand = new GetPeopleQueryPaginatedInput
+        var invalidPersonCommand = new GetPeopleQueryPaginated
         {
             PageNumber = -1,
             PageSize = -1
         };
+
         return invalidPersonCommand;
     }
 
-    public GetPeopleQueryPaginatedInput GetValidQueryInput()
+    public static GetPeopleQueryPaginated GetValidQueryInput()
     {
-        var invalidPersonCommand = new GetPeopleQueryPaginatedInput
+        var invalidPersonCommand = new GetPeopleQueryPaginated
         {
             PageNumber = 2,
-            PageSize = 50
+            PageSize = 2
         };
+
         return invalidPersonCommand;
     }
 }
